@@ -5,13 +5,14 @@ package com.example.hamidur.mynews;
  */
 public class NewsArticle {
 
-    private String title, date, description, imgUrl;
+    private String title, date, description, author ,imgUrl;
 
-    public NewsArticle(String imgUrl, String description, String title, String date) {
+    public NewsArticle(String imgUrl, String description, String title, String author , String date) {
         this.imgUrl = imgUrl;
         this.description = description;
         this.title = title;
         this.date = date;
+        this.author = author;
     }
 
     public String getImgUrl() {
@@ -30,4 +31,5 @@ public class NewsArticle {
         return date;
     }
 
+    public String getAuthor () { return author; }
 }
