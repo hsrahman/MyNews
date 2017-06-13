@@ -19,7 +19,6 @@ import java.util.List;
  */
 public class NewsAdapter extends ArrayAdapter<NewsArticle>{
 
-
     public NewsAdapter(Context context, List<NewsArticle> article) {
         super(context, 0, article);
     }
