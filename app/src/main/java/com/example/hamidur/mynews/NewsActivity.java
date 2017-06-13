@@ -18,6 +18,7 @@ import java.util.List;
 public class NewsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<NewsArticle>> {
 
     private NewsAdapter mAdapter;
+    private static final String API_KEY = "b5b4806ba6834681baecc6492d59d788";
 
     private static final int ARTICLE_LOADER_ID = 1;
 
@@ -46,7 +47,24 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(mAdapter);
+    }
 
+    @Override
+    public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
+        // Hide the progress bar on finished load
+        View loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
+
+        emptyStateTextView.setText(R.string.no_news);
+
+        // Clear the adapter of previous earthquake data
+        mAdapter.clear();
+
+        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
+        // data set. This will trigger the ListView to update.
+        if (newsArticles != null && !newsArticles.isEmpty()) {
+            mAdapter.addAll(newsArticles);
+        }
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -57,7 +75,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         } else {
-            View loadingIndicator = findViewById(R.id.loading_indicator);
+            loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
@@ -80,5 +98,6 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<NewsArticle>> loader){
         mAdapter.clear();
     }
+
 
 }

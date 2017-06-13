@@ -29,7 +29,6 @@ public class QueryUtils {
 
     }
 
-
     private static List<NewsArticle> extractFeaturesFrpmJson(String articleJson){
         if(TextUtils.isEmpty(articleJson))
             return null;
