@@ -31,40 +31,15 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
-        // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
-        ArrayList<NewsArticle> articles = new ArrayList<NewsArticle>();
-        articles.add(new NewsArticle("https://image.flaticon.com/teams/new/1-freepik.jpg", "test description", "Test title", "Mr Author", "08/07/1996"));
-
-
-        // Create a new adapter that takes an empty list of earthquakes as input
-        mAdapter = new NewsAdapter(this, articles);
+        mAdapter = new NewsAdapter(this, new ArrayList<NewsArticle>());
 
         emptyStateTextView = (TextView) findViewById(R.id.empty_view);
         earthquakeListView.setEmptyView(emptyStateTextView);
 
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
         earthquakeListView.setAdapter(mAdapter);
-    }
 
-    @Override
-    public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        // Hide the progress bar on finished load
-        View loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.GONE);
-
-        emptyStateTextView.setText(R.string.no_news);
-
-        // Clear the adapter of previous earthquake data
-        mAdapter.clear();
-
-        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
-        if (newsArticles != null && !newsArticles.isEmpty()) {
-            mAdapter.addAll(newsArticles);
-        }
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -75,11 +50,24 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         } else {
-            loadingIndicator = findViewById(R.id.loading_indicator);
+            View loadingIndicator = findViewById(R.id.loading_indicator);
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
+    }
 
+    @Override
+    public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
+        View loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
+
+        emptyStateTextView.setText(R.string.no_news);
+
+        mAdapter.clear();
+
+        if (newsArticles != null && !newsArticles.isEmpty()) {
+            mAdapter.addAll(newsArticles);
+        }
     }
 
     @Override
