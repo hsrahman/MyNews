@@ -29,7 +29,7 @@ public class QueryUtils {
 
     }
 
-    private static List<NewsArticle> extractFeaturesFrpmJson(String articleJson){
+    private static List<NewsArticle> extractNewsFromJson(String articleJson){
         if(TextUtils.isEmpty(articleJson))
             return null;
 
@@ -58,10 +58,7 @@ public class QueryUtils {
             }
 
         } catch (JSONException e) {
-            // If an error is thrown when executing any of the above statements in the "try" block,
-            // catch the exception here, so the app doesn't crash. Print a log message
-            // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", "Problem parsing the article JSON results", e);
         }
 
         return newsArticleList;
@@ -78,9 +75,43 @@ public class QueryUtils {
             Log.e(LOG_TAG, "Problem making the HTTP request");
         }
 
-        List<NewsArticle> newsArticles = extractFeaturesFrpmJson(jsonResponse);
+        List<NewsArticle> newsArticles = extractNewsFromJson(jsonResponse);
         return newsArticles;
 
+    }
+
+    private static List<Source> extractSourceFromJson(String sourceJson){
+        if(TextUtils.isEmpty(sourceJson))
+            return null;
+
+        List<Source> sourcesList = new ArrayList<>();
+        try {
+            JSONObject baseJsonResponse = new JSONObject(sourceJson);
+
+            JSONArray sourceArray = baseJsonResponse.getJSONArray("sources");
+            for(int i = 0; i < sourceArray.length(); i++) {
+                JSONObject currentSource = sourceArray.getJSONObject(i);
+                String id = currentSource.getString("id");
+                String name = currentSource.getString("name");
+                String category = currentSource.getString("category");
+                sourcesList.add(new Source(id, name, category));
+            }
+        } catch (JSONException e) {
+            Log.e("QueryUtils", "Problem parsing the source JSON results", e);
+        }
+        return sourcesList;
+    }
+
+    public static List<Source> fetchSourceData(String requestUrl){
+        URL url =  createUrl(requestUrl);
+        String jsonResponse = null;
+        try {
+            jsonResponse = createHttpRequest(url);
+        } catch (IOException io) {
+            Log.e(LOG_TAG, "Problem making the HTTP request");
+        }
+        List<Source> sources = extractSourceFromJson(jsonResponse);
+        return sources;
     }
 
     /**

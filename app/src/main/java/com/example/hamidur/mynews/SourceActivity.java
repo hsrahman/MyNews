@@ -30,12 +30,12 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
               android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        //parent.getItemAtPosition(position);
-        Toast.makeText(this, "hi", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, parent.getItemAtPosition(position).toString() , Toast.LENGTH_LONG).show();
     }
 
     @Override
