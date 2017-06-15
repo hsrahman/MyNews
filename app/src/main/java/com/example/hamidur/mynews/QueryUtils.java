@@ -50,8 +50,9 @@ public class QueryUtils {
                 String author = currentArticle.getString("author");
                 String description = currentArticle.getString("description");
                 String imgUrl = currentArticle.getString("urlToImage");
+                String url = currentArticle.getString("url");
 
-                NewsArticle newsArticle = new NewsArticle(imgUrl, description, title, author, date);
+                NewsArticle newsArticle = new NewsArticle(imgUrl, description, title, author, date, url);
 
                 newsArticleList.add(newsArticle);
             }

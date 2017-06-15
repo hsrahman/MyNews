@@ -2,11 +2,13 @@ package com.example.hamidur.mynews;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -39,6 +41,16 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         earthquakeListView.setEmptyView(emptyStateTextView);
 
         earthquakeListView.setAdapter(mAdapter);
+
+        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                NewsArticle selectedArticle = mAdapter.getItem(position);
+                Uri newsUri = Uri.parse(selectedArticle.getSourceUrl());
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
+                startActivity(websiteIntent);
+            }
+        });
 
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
