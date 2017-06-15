@@ -52,7 +52,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         selectedCategory = parent.getItemAtPosition(position).toString();
-
+        getLoaderManager().restartLoader(SOURCE_LOADER_ID, null, this);
         makeOnlineApiCall();
     }
 
