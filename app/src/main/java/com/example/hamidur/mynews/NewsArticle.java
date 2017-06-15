@@ -5,14 +5,15 @@ package com.example.hamidur.mynews;
  */
 public class NewsArticle {
 
-    private String title, date, description, author ,imgUrl;
+    private String title, date, description, author ,imgUrl, sourceUrl;
 
-    public NewsArticle(String imgUrl, String description, String title, String author , String date) {
+    public NewsArticle(String imgUrl, String description, String title, String author , String date, String sourceUrl) {
         this.imgUrl = imgUrl;
         this.description = description;
         this.title = title;
         this.date = date;
         this.author = author;
+        this.sourceUrl = sourceUrl;
     }
 
     public String getImgUrl() {
@@ -32,4 +33,6 @@ public class NewsArticle {
     }
 
     public String getAuthor () { return author; }
+
+    public String getSourceUrl () { return sourceUrl; }
 }
