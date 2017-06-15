@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">My News</string>
+
+    <string name="setting_name">Settings</string>
     <!-- Text to display in the list when there are no earthquakes [CHAR LIMIT=NONE] -->
     <string name="no_news">No news found.</string>
     <!-- Error message when there is no internet connectivity [CHAR LIMIT=NONE] -->
