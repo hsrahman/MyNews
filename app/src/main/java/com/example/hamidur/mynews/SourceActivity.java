@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -22,11 +23,11 @@ import java.util.List;
 
 public class SourceActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, LoaderManager.LoaderCallbacks<List<Source>> {
 
-    private static final String NEWSAPI_REQUEST_URL = " https://newsapi.org/v1/sources";
+    private static final String NEWSAPI_REQUEST_URL_SOURCE = " https://newsapi.org/v1/sources";
 
-    private String selectedCategory = "";
+    private String selectedCategory = "sport";
 
-    private static final int SOURCE_LOADER_ID = 1;
+    private static final int SOURCE_LOADER_ID = 2;
 
     private SourceAdapter mAdapter;
 
@@ -34,17 +35,22 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_source);
+        ListView sourceListView = (ListView) findViewById(R.id.sourcelist);
 
-        ArrayList<String> categories =  QueryUtils.fetchSourceData();
+        ArrayList<String> categories =  new ArrayList<>();
+        categories.add("sport");
+        categories.add("general");
+        categories.add("gaming");
 
         mAdapter = new SourceAdapter(this, new ArrayList<Source>());
-
+        sourceListView.setAdapter(mAdapter);
         Spinner spinner = (Spinner) findViewById(R.id.categories);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
               android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+        makeOnlieApiCall();
     }
 
     @Override
@@ -54,6 +60,10 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
         selectedCategory = parent.getItemAtPosition(position).toString();
 
+        makeOnlieApiCall();
+    }
+
+    private void makeOnlieApiCall(){
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -72,8 +82,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     @Override
-    public void onLoadFinished(Loader<List<NewsArticle>> loader, List<Source> sources) {
-        View loadingIndicator = findViewById(R.id.loading_indicator);
+    public void onLoadFinished(Loader<List<Source>> loader, List<Source> sources) {
+        View loadingIndicator = findViewById(R.id.source_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
         mAdapter.clear();
@@ -85,7 +95,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public Loader<List<Source>> onCreateLoader(int i, Bundle bundle){
-        Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
+        Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL_SOURCE);
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
         uriBuilder.appendQueryParameter("category", selectedCategory);;
@@ -94,7 +104,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     @Override
-    public void onLoaderReset(Loader<List<NewsArticle>> loader){
+    public void onLoaderReset(Loader<List<Source>> loader){
         mAdapter.clear();
     }
 }

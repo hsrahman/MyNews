@@ -18,7 +18,7 @@ import java.util.List;
 public class SourceAdapter extends ArrayAdapter<Source> {
 
     public SourceAdapter(Context context, List<Source> sources) {
-        super(context, 0, article);
+        super(context, 0, sources);
     }
 
     @Override

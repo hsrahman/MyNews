@@ -9,8 +9,6 @@ import java.util.List;
  * Created by pro-developer Hamidur on 13/06/2017.
  */
 public class NewsLoader extends AsyncTaskLoader<List<NewsArticle>> {
-    /** Tag for log messages */
-    private static final String LOG_TAG = NewsLoader.class.getName();
 
     /** Query URL */
     private String mUrl;
@@ -31,7 +29,7 @@ public class NewsLoader extends AsyncTaskLoader<List<NewsArticle>> {
             return null;
         }
         // Perform the network request, parse the response, and extract a list of earthquakes.
-        List<NewsArticle> earthquakes = QueryUtils.fetchNewsArticleData(mUrl);
-        return earthquakes;
+        List<NewsArticle> newsArticles = QueryUtils.fetchNewsArticleData(mUrl);
+        return newsArticles;
     }
 }
