@@ -6,4 +6,7 @@
     <string name="no_news">No news found.</string>
     <!-- Error message when there is no internet connectivity [CHAR LIMIT=NONE] -->
     <string name="no_internet_connection">No internet connection.</string>
+
+    <string name="my_source">bbc-sport</string>
+    <string name="my_default_source">bbc-sport</string>
 </resources>

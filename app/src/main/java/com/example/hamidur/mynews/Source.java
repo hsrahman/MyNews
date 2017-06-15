@@ -19,11 +19,20 @@ public class Source {
 
     private String description;
 
+    private boolean selected;
+
     public Source(String id, String name, String category) {
         this.id = id;
         this.name = name;
         this.category = category;
+        selected = false;
     }
+
+    public void setSelected (boolean status) {
+        selected = status;
+    }
+
+    public boolean isSelected() { return selected; }
 
     public String getCategory() {
         return category;

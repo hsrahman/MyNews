@@ -1,6 +1,7 @@
 package com.example.hamidur.mynews;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,9 +36,9 @@ public class SourceAdapter extends ArrayAdapter<Source> {
         Source source = getItem(position);
 
         TextView name = (TextView) listItemView.findViewById(R.id.source_name);
-
-        name.setText(source.getName());
-
+        String sourceName = source.getName();
+        name.setText(sourceName);
+        if (source.isSelected()) name.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.selected_source));
         return listItemView;
     }
 }
