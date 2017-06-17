@@ -35,6 +35,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     private SourceAdapter mAdapter;
 
+    private static final int MAX_SELECTABLE = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +55,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
-                if(!currentSource.isSelected()) {
+                if(!currentSource.isSelected() && prefs.size() != MAX_SELECTABLE) {
                     currentSource.setSelected(true);
                     prefs.add(currentSource.getId());
                     editor.putStringSet("source", prefs);
