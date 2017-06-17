@@ -24,7 +24,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final int ARTICLE_LOADER_ID = 1;
 
-    private static final String NEWSAPI_REQUEST_URL = " https://newsapi.org/v1/articles";
+    private static final String NEWSAPI_REQUEST_URL = "https://newsapi.org/v1/articles";
 
     private TextView emptyStateTextView;
 
@@ -86,7 +86,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle){
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
-        uriBuilder.appendQueryParameter("source", getPreferences(Context.MODE_PRIVATE).getString(getString(R.string.my_source), getString(R.string.my_default_source)));
+        uriBuilder.appendQueryParameter("source", getPreferences(Context.MODE_PRIVATE).getString(getString(R.string.my_source), getString(R.string.my_source)));
         uriBuilder.appendQueryParameter("sortBy", "latest");
         uriBuilder.appendQueryParameter("apiKey", API_KEY);
         return new NewsLoader(this, uriBuilder.toString());

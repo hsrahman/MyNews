@@ -18,11 +18,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SourceActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, LoaderManager.LoaderCallbacks<List<Source>> {
 
     private static final String NEWSAPI_REQUEST_URL_SOURCE = " https://newsapi.org/v1/sources";
+
+    private HashMap <String, List<Source>> categoryToSource;
 
     private String selectedCategory = "sport";
 
@@ -35,7 +38,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_source);
         ListView sourceListView = (ListView) findViewById(R.id.sourcelist);
-
+        // instantiate hasmap
+        categoryToSource = new HashMap<>();
         ArrayList<String> categories =  new ArrayList<>();
         categories.add("sport");
         categories.add("general");
@@ -69,8 +73,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         selectedCategory = parent.getItemAtPosition(position).toString();
-        getLoaderManager().restartLoader(SOURCE_LOADER_ID, null, this);
-        makeOnlineApiCall();
+        //getLoaderManager().restartLoader(SOURCE_LOADER_ID, null, this);
+        //makeOnlineApiCall();
     }
 
     private void makeOnlineApiCall(){
@@ -96,9 +100,13 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         View loadingIndicator = findViewById(R.id.source_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
         for(int i = 0; i < sources.size(); i++){
-            if(sources.get(i).getName().equals(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_default_source)))){
-
+            Source s = sources.get(i);
+            // check newly created sources has been selected therefor it has to be set as selected
+            if(s.getId().equals(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_default_source)))){
+                s.setSelected(true);
             }
+            // store in hashmap
+
         }
         mAdapter.clear();
 
@@ -110,11 +118,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public Loader<List<Source>> onCreateLoader(int i, Bundle bundle){
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL_SOURCE);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-
-        uriBuilder.appendQueryParameter("category", selectedCategory);;
-
-        return new SourceLoader(this, uriBuilder.toString());
+        return new SourceLoader(this, baseUri.toString());
     }
 
     @Override

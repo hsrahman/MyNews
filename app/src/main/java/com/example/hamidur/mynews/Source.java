@@ -19,6 +19,8 @@ public class Source {
 
     private String description;
 
+    private String[] sortByAvailable;
+
     private boolean selected;
 
     public Source(String id, String name, String category) {
@@ -60,5 +62,9 @@ public class Source {
 
     public String getDescription() {
         return description;
+    }
+
+    public String[] getSortByAvailable() {
+        return sortByAvailable;
     }
 }
