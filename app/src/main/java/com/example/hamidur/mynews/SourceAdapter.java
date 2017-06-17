@@ -39,6 +39,7 @@ public class SourceAdapter extends ArrayAdapter<Source> {
         String sourceName = source.getName();
         name.setText(sourceName);
         if (source.isSelected()) listItemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.selected_source));
+        else listItemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.unselected_source));
         return listItemView;
     }
 }
