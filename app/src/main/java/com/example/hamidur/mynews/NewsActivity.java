@@ -91,7 +91,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         uriBuilder.appendQueryParameter("source", getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)));
         //uriBuilder.appendQueryParameter("sortBy", "latest");
         uriBuilder.appendQueryParameter("apiKey", API_KEY);
-        System.out.println("URL " + uriBuilder.toString());
+        //System.out.println("URL " + uriBuilder.toString());
         return new NewsLoader(this, uriBuilder.toString());
     }
 
