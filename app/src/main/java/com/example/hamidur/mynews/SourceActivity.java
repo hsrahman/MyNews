@@ -47,10 +47,10 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         sourceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
-                if(currentSource.isSelected()) {
+                if(!currentSource.isSelected()) {
                     currentSource.setSelected(true);
                     editor.putString("source", currentSource.getId());
                     editor.commit();
@@ -101,7 +101,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         for(int i = 0; i < sources.size(); i++){
             Source s = sources.get(i);
             // check newly created sources has been selected therefor it has to be set as selected
-            if(s.getId().equals(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)))){
+            if(s.getId().equals(getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)))){
                 System.out.println(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)));
                 s.setSelected(true);
             }

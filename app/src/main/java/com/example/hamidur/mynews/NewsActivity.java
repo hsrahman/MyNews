@@ -80,15 +80,18 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         if (newsArticles != null && !newsArticles.isEmpty()) {
             mAdapter.addAll(newsArticles);
         }
+
+        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
     }
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle){
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
-        uriBuilder.appendQueryParameter("source", getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)));
-        uriBuilder.appendQueryParameter("sortBy", "latest");
+        uriBuilder.appendQueryParameter("source", getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)));
+        //uriBuilder.appendQueryParameter("sortBy", "latest");
         uriBuilder.appendQueryParameter("apiKey", API_KEY);
+        System.out.println("URL " + uriBuilder.toString());
         return new NewsLoader(this, uriBuilder.toString());
     }
 

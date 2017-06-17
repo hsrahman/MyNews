@@ -25,19 +25,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent newsActivity = new Intent(MainActivity.this, NewsActivity.class);
                 startActivity(newsActivity);
-                Toast.makeText(getApplicationContext(), getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)), Toast.LENGTH_SHORT).show();
             }
         });
 
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.remove("source");
                 editor.clear();
                 editor.commit();
-                Toast.makeText(getApplicationContext(), "removed preferences", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "removed preferences: " + getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)), Toast.LENGTH_SHORT).show();
             }
         });
     }
