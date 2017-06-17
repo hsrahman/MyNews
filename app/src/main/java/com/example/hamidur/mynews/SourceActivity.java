@@ -25,7 +25,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     private static final String NEWSAPI_REQUEST_URL_SOURCE = " https://newsapi.org/v1/sources";
 
-    private HashMap <String, List<Source>> categoryToSource;
+    private HashMap <String, Source> categoryToSource;
 
     private String selectedCategory = "sport";
 
@@ -40,6 +40,10 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         ListView sourceListView = (ListView) findViewById(R.id.sourcelist);
         // instantiate hasmap
         categoryToSource = new HashMap<>();
+        ArrayList<String> categories =  new ArrayList<>();
+        categories.add("sport");
+        categories.add("general");
+        categories.add("gaming");
 
         mAdapter = new SourceAdapter(this, new ArrayList<Source>());
         sourceListView.setAdapter(mAdapter);
@@ -50,20 +54,19 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                 SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
-                if(currentSource.isSelected()) {
-                    currentSource.setSelected(true);
-                    editor.putString("source", currentSource.getId());
-                    editor.commit();
-                    view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
-                } else {
-                    currentSource.setSelected(false);
-                    editor.remove("source");
-                    editor.commit();
-                    view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.unselected_source));
-                }
+                currentSource.setSelected(true);
+                editor.putString("source",currentSource.getId());
+                editor.commit();
+                view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
             }
         });
 
+        Spinner spinner = (Spinner) findViewById(R.id.categories);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+              android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
         makeOnlineApiCall();
     }
 
@@ -72,8 +75,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         selectedCategory = parent.getItemAtPosition(position).toString();
         //getLoaderManager().restartLoader(SOURCE_LOADER_ID, null, this);
         //makeOnlineApiCall();
-        mAdapter.clear();
-        mAdapter.addAll(categoryToSource.get(selectedCategory));
     }
 
     private void makeOnlineApiCall(){
@@ -102,28 +103,15 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             Source s = sources.get(i);
             // check newly created sources has been selected therefor it has to be set as selected
             if(s.getId().equals(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)))){
-                System.out.println(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)));
                 s.setSelected(true);
             }
             // store in hashmap
-            if(categoryToSource.get(s.getCategory()) == null){ // if list doesn't exist yet
-                categoryToSource.put(s.getCategory(), new ArrayList<Source>());
-            }
-
-            categoryToSource.get(s.getCategory()).add(s);
+            categoryToSource.put(s.getCategory(), s);
         }
-
-        Spinner spinner = (Spinner) findViewById(R.id.categories);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, new ArrayList<String>(categoryToSource.keySet()));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-
         mAdapter.clear();
 
         if (sources != null && !sources.isEmpty()) {
-            mAdapter.addAll(categoryToSource.get(selectedCategory));
+            mAdapter.addAll(sources);
         }
     }
 
