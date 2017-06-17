@@ -86,11 +86,9 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle){
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
-
         uriBuilder.appendQueryParameter("source", getPreferences(Context.MODE_PRIVATE).getString(getString(R.string.my_source), getString(R.string.my_default_source)));
         uriBuilder.appendQueryParameter("sortBy", "latest");
         uriBuilder.appendQueryParameter("apiKey", API_KEY);
-
         return new NewsLoader(this, uriBuilder.toString());
     }
 
@@ -98,6 +96,4 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<NewsArticle>> loader){
         mAdapter.clear();
     }
-
-
 }
