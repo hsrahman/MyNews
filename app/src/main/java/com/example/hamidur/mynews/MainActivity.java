@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
                 editor.remove("source");
                 editor.clear();
                 editor.commit();
-                Toast.makeText(getApplicationContext(), "removed preferences: " + getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)), Toast.LENGTH_SHORT).show();
             }
         });
     }
