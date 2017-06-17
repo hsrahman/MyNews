@@ -5,7 +5,8 @@
     <item
         android:id="@+id/settings"
         android:title="@string/setting_name"
+        android:orderInCategory="1"
         android:text="@string/setting_name"
-        app:showAsAction="always"></item>
+        app:showAsAction="ifRoom"/>
 
 </menu>

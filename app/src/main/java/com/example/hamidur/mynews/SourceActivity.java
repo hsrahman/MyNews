@@ -51,10 +51,9 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
                 currentSource.setSelected(true);
-                editor.putString(getString(R.string.my_source),currentSource.getId());
+                editor.putString("source",currentSource.getId());
                 editor.commit();
-                TextView name  = (TextView) view.findViewById(R.id.source_name);
-                name.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
+                view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
             }
         });
 
@@ -70,7 +69,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         selectedCategory = parent.getItemAtPosition(position).toString();
-
         getLoaderManager().restartLoader(SOURCE_LOADER_ID, null, this);
         makeOnlineApiCall();
     }
@@ -97,7 +95,11 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     public void onLoadFinished(Loader<List<Source>> loader, List<Source> sources) {
         View loadingIndicator = findViewById(R.id.source_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
+        for(int i = 0; i < sources.size(); i++){
+            if(sources.get(i).getName().equals(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_default_source)))){
 
+            }
+        }
         mAdapter.clear();
 
         if (sources != null && !sources.isEmpty()) {
