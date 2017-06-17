@@ -87,7 +87,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
 
-        uriBuilder.appendQueryParameter("source", "the-next-web");
+        uriBuilder.appendQueryParameter("source", getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_default_source)));
         uriBuilder.appendQueryParameter("sortBy", "latest");
         uriBuilder.appendQueryParameter("apiKey", API_KEY);
 
