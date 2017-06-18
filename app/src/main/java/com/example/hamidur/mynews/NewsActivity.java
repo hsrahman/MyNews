@@ -84,6 +84,8 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
             for (List<NewsArticle> articles : newsArticles) {
                 if (articles != null) allArticles.addAll(articles);
             }
+            // randomis the news articles
+
             mAdapter.addAll(allArticles);
         }
 
@@ -100,7 +102,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
             uriBuilder.appendQueryParameter("source", id);
             //uriBuilder.appendQueryParameter("sortBy", "latest");
             uriBuilder.appendQueryParameter("apiKey", API_KEY);
-            allUrls.add(baseUri.toString());
+            allUrls.add(uriBuilder.toString());
         }
 
         //System.out.println("URL " + uriBuilder.toString());

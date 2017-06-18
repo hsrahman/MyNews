@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,12 +56,16 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
-                if(!currentSource.isSelected() && prefs.size() != MAX_SELECTABLE) {
-                    currentSource.setSelected(true);
-                    prefs.add(currentSource.getId());
-                    editor.putStringSet("source", prefs);
-                    editor.commit();
-                    view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
+                if(!currentSource.isSelected()) {
+                    if (prefs.size() != MAX_SELECTABLE) {
+                        currentSource.setSelected(true);
+                        prefs.add(currentSource.getId());
+                        editor.putStringSet("source", prefs);
+                        editor.commit();
+                        view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
+                    } else {
+                        Toast.makeText(getApplicationContext(), "You cannot select more then 3 sources", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     currentSource.setSelected(false);
                     prefs.remove(mAdapter.getItem(position).getId());
