@@ -100,7 +100,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
             uriBuilder.appendQueryParameter("source", id);
             //uriBuilder.appendQueryParameter("sortBy", "latest");
             uriBuilder.appendQueryParameter("apiKey", API_KEY);
-            allUrls.add(baseUri.toString());
+            allUrls.add(uriBuilder.toString());
         }
 
         //System.out.println("URL " + uriBuilder.toString());
