@@ -114,7 +114,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             Source s = sources.get(i);
             // check newly created sources has been selected therefor it has to be set as selected
             if(getPrefInSet(s.getId()) != null){
-                System.out.println(getPreferences(Context.MODE_PRIVATE).getString("source", getString(R.string.my_source)));
                 s.setSelected(true);
             }
             // store in hashmap
@@ -126,8 +125,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         }
 
         Spinner spinner = (Spinner) findViewById(R.id.categories);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, new ArrayList<String>(categoryToSource.keySet()));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, new ArrayList<>(categoryToSource.keySet()));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
