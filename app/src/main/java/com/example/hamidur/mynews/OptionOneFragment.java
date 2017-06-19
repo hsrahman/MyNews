@@ -1,25 +1,26 @@
 package com.example.hamidur.mynews;
 
+
 import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.Loader;
 import android.net.Uri;
-import android.support.v4.util.ArraySet;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.util.ArraySet;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class NewsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<List<NewsArticle>>> {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class OptionOneFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<List<NewsArticle>>> {
 
     private NewsAdapter mAdapter;
     private static final String API_KEY = "b5b4806ba6834681baecc6492d59d788";
@@ -30,12 +31,19 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private TextView emptyStateTextView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news);
+    public OptionOneFragment() {
+        // Required empty public constructor
+    }
 
-        ListView newsListView = (ListView) findViewById(R.id.list);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.news_list, container, false);
+
+        /* News Activity OnCreate
+
+             ListView newsListView = (ListView) findViewById(R.id.list);
 
         mAdapter = new NewsAdapter(this, new ArrayList<NewsArticle>());
 
@@ -67,11 +75,16 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
+
+         */
+
+
+        return rootView;
     }
 
     @Override
     public void onLoadFinished(Loader<List<List<NewsArticle>>> loader, List<List<NewsArticle>> newsArticles) {
-        View loadingIndicator = findViewById(R.id.loading_indicator);
+        View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
         emptyStateTextView.setText(R.string.no_news);
@@ -94,7 +107,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<List<List<NewsArticle>>> onCreateLoader(int i, Bundle bundle){
         List<String> allUrls = new ArrayList<>();
-        Set<String> ids = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+        Set<String> ids = getActivity().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
         for (String id : ids) {
             Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
             Uri.Builder uriBuilder = baseUri.buildUpon();
@@ -103,11 +116,12 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
             uriBuilder.appendQueryParameter("apiKey", API_KEY);
             allUrls.add(uriBuilder.toString());
         }
-        return new NewsLoader(this, allUrls);
+        return new NewsLoader(getActivity(), allUrls);
     }
 
     @Override
     public void onLoaderReset(Loader<List<List<NewsArticle>>> loader){
         mAdapter.clear();
     }
+
 }

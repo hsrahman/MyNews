@@ -9,12 +9,12 @@ import java.util.List;
 /**
  * Created by pro-developer Hamidur on 13/06/2017.
  */
-public class NewsLoader extends AsyncTaskLoader<List<List<NewsArticle>>> {
+public class NewsLoader extends AsyncTaskLoader<List<NewsArticle>> {
 
     /** Query URL */
-    private List<String> mUrl;
+    private String mUrl;
 
-    public NewsLoader(Context context, List<String> url) {
+    public NewsLoader(Context context, String url) {
         super(context);
         mUrl = url;
     }
@@ -25,16 +25,10 @@ public class NewsLoader extends AsyncTaskLoader<List<List<NewsArticle>>> {
     }
 
     @Override
-    public List<List<NewsArticle>> loadInBackground() {
-        List<List<NewsArticle>> allNews = new ArrayList<>();
+    public List<NewsArticle> loadInBackground() {
         if (mUrl == null) {
             return null;
         }
-        for (int i = 0; i < mUrl.size(); i++) {
-            // Perform the network request, parse the response, and extract a list of earthquakes.
-            List<NewsArticle> newsArticles = QueryUtils.fetchNewsArticleData(mUrl.get(i));
-            allNews.add(newsArticles);
-        }
-        return allNews;
+        return QueryUtils.fetchNewsArticleData(mUrl);
     }
 }
