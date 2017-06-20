@@ -36,8 +36,6 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
 
     private TextView emptyStateTextView;
 
-    private ArrayList<NewsArticle> loadedData;
-
     public OptionOneFragment() {
         // Required empty public constructor
     }
@@ -55,15 +53,7 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
-       if (savedInstanceState == null) {
-           mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
-       } else {
-           if (savedInstanceState.getSerializable("loaded") != null) {
-               mAdapter = new NewsAdapter(getActivity(), (ArrayList<NewsArticle>) savedInstanceState.getSerializable("loaded"));
-           } else {
-               mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
-           }
-       }
+        mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
 
         emptyStateTextView = (TextView) rootView.findViewById(R.id.empty_view);
 
@@ -110,17 +100,10 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
         mAdapter.clear();
 
         if (newsArticles != null && !newsArticles.isEmpty()) {
-            loadedData = new ArrayList<>();
-            loadedData.addAll(newsArticles);
             mAdapter.addAll(newsArticles);
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("loaded", loadedData);
-    }
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle) {
