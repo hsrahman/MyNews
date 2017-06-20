@@ -52,11 +52,11 @@ public class QueryUtils {
                 String imgUrl = currentArticle.getString("urlToImage");
                 String url = currentArticle.getString("url");
 
-                if (author == null) author = "";
-                if (date == null)date = "";
-                if (description == null) description = "No description was provided (Click to read the story)";
+                if (author.equals("null")) author = "";
+                if (date.equals("null"))date = "";
+                if (description.equals("null")) description = "No description was provided (Click to read the story)";
 
-                if (imgUrl == null || imgUrl == "") imgUrl = "https://electricalwholesalersperth.com.au/wp-content/uploads/2016/02/unavailable.jpg";
+                if (imgUrl.equals("null") || imgUrl.equals("")) imgUrl = "https://electricalwholesalersperth.com.au/wp-content/uploads/2016/02/unavailable.jpg";
 
                 NewsArticle newsArticle = new NewsArticle(imgUrl, description, title, author, date, url);
 
