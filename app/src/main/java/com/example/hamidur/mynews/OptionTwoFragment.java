@@ -28,13 +28,14 @@ import java.util.Set;
 public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<NewsArticle>>{
 
     private NewsAdapter mAdapter;
-    private static final String API_KEY = "b5b4806ba6834681baecc6492d59d788";
 
     private static final int ARTICLE_LOADER_ID = 2;
 
     private static final String NEWSAPI_REQUEST_URL = "https://newsapi.org/v1/articles";
 
     private TextView emptyStateTextView;
+
+    private ArrayList<NewsArticle> loadedData;
 
     public OptionTwoFragment() {
         // Required empty public constructor
@@ -48,7 +49,15 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
-        mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
+        if (savedInstanceState == null) {
+            mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
+        } else {
+            if (savedInstanceState.getSerializable("loaded") != null) {
+                mAdapter = new NewsAdapter(getActivity(), (ArrayList<NewsArticle>) savedInstanceState.getSerializable("loaded"));
+            } else {
+                mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
+            }
+        }
 
         emptyStateTextView = (TextView) rootView.findViewById(R.id.empty_view);
         newsListView.setEmptyView(emptyStateTextView);
@@ -87,15 +96,25 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
         View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
+        System.out.println("onLoadFinished freg 2");
+
         emptyStateTextView.setText(R.string.no_news);
 
         mAdapter.clear();
 
         if (newsArticles != null && !newsArticles.isEmpty()) {
+            loadedData = new ArrayList<>();
+            loadedData.addAll(newsArticles);
             mAdapter.addAll(newsArticles);
         }
 
-        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
+       getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("loaded", loadedData);
     }
 
     @Override
@@ -109,7 +128,6 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
             if (counter == 2) {
                 uriBuilder.appendQueryParameter("source", id);
                 //uriBuilder.appendQueryParameter("sortBy", "latest");
-                uriBuilder.appendQueryParameter("apiKey", API_KEY);
             }
         }
         return new NewsLoader(getActivity(), uriBuilder.toString());
