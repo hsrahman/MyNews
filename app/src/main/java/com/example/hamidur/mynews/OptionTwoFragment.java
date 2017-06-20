@@ -78,7 +78,6 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
-
         return rootView;
     }
 

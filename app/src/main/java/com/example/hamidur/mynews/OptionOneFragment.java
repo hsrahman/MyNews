@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArraySet;
 import android.view.LayoutInflater;
@@ -40,6 +41,11 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+       setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,12 +86,12 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
 
-
         return rootView;
     }
 
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
+        System.out.println("LOADER FINISHED");
         View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
@@ -97,7 +103,7 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             mAdapter.addAll(newsArticles);
         }
 
-        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
+        getActivity().getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
     }
 
     @Override
@@ -114,6 +120,7 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
                 uriBuilder.appendQueryParameter("apiKey", API_KEY);
             }
         }
+        System.out.println("REQUEST SENT");
         return new NewsLoader(getActivity(), uriBuilder.toString());
     }
 
