@@ -29,7 +29,6 @@ import java.util.Set;
 public class OptionOneFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<NewsArticle>> {
 
     private NewsAdapter mAdapter;
-    private static final String API_KEY = "b5b4806ba6834681baecc6492d59d788";
 
     private static final int ARTICLE_LOADER_ID = 1;
 
@@ -42,22 +41,14 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-       setRetainInstance(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.news_list, container, false);
 
-
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
-        mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
-
         emptyStateTextView = (TextView) rootView.findViewById(R.id.empty_view);
+
         newsListView.setEmptyView(emptyStateTextView);
 
         newsListView.setAdapter(mAdapter);
@@ -85,13 +76,12 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
-
         return rootView;
     }
 
+
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        System.out.println("LOADER FINISHED");
         View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
@@ -102,8 +92,6 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
         if (newsArticles != null && !newsArticles.isEmpty()) {
             mAdapter.addAll(newsArticles);
         }
-
-        getActivity().getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
     }
 
     @Override
@@ -117,10 +105,8 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             if (counter == 1) {
                 uriBuilder.appendQueryParameter("source", id);
                 //uriBuilder.appendQueryParameter("sortBy", "latest");
-                uriBuilder.appendQueryParameter("apiKey", API_KEY);
             }
         }
-        System.out.println("REQUEST SENT");
         return new NewsLoader(getActivity(), uriBuilder.toString());
     }
 

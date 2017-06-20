@@ -1,5 +1,7 @@
 package com.example.hamidur.mynews;
 
+import java.io.Serializable;
+
 /**
  * Created by pro-developer Hamidur on 12/06/2017.
  */

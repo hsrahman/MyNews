@@ -54,6 +54,8 @@ public class QueryUtils {
 
                 if (author == null) author = "";
                 if (date == null)date = "";
+                if (description == null) description = "No description was provided (Click to read the story)";
+
                 if (imgUrl == null || imgUrl == "") imgUrl = "https://electricalwholesalersperth.com.au/wp-content/uploads/2016/02/unavailable.jpg";
 
                 NewsArticle newsArticle = new NewsArticle(imgUrl, description, title, author, date, url);
@@ -81,7 +83,6 @@ public class QueryUtils {
 
         List<NewsArticle> newsArticles = extractNewsFromJson(jsonResponse);
         return newsArticles;
-
     }
 
     private static List<Source> extractSourceFromJson(String sourceJson){
@@ -141,6 +142,7 @@ public class QueryUtils {
                 urlConnection.setRequestMethod("GET");
                 urlConnection.setReadTimeout(10000);
                 urlConnection.setConnectTimeout(15000);
+                urlConnection.setRequestProperty("x-api-key","b5b4806ba6834681baecc6492d59d788");
                 urlConnection.connect();
                 if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     inputStream = urlConnection.getInputStream();

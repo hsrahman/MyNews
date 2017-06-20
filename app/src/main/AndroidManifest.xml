@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewsActivity" />
+        <activity android:name=".NewsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name=".SourceActivity" />
         <activity android:name=".SettingsActivity"></activity>
     </application>
