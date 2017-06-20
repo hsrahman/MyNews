@@ -60,6 +60,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                     if (prefs.size() != MAX_SELECTABLE) {
                         currentSource.setSelected(true);
                         prefs.add(currentSource.getId());
+                        editor.clear();
                         editor.putStringSet("source", prefs);
                         editor.commit();
                         view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));

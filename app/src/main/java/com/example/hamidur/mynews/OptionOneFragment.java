@@ -36,6 +36,8 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
 
     private TextView emptyStateTextView;
 
+    private View rootView;
+
     public OptionOneFragment() {
         // Required empty public constructor
     }
@@ -43,9 +45,11 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.news_list, container, false);
+        rootView = inflater.inflate(R.layout.news_list, container, false);
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
+
+        mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
 
         emptyStateTextView = (TextView) rootView.findViewById(R.id.empty_view);
 
@@ -76,13 +80,14 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
+
         return rootView;
     }
 
 
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
+        View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
         emptyStateTextView.setText(R.string.no_news);
@@ -93,6 +98,7 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             mAdapter.addAll(newsArticles);
         }
     }
+
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle) {
@@ -107,6 +113,7 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
                 //uriBuilder.appendQueryParameter("sortBy", "latest");
             }
         }
+
         return new NewsLoader(getActivity(), uriBuilder.toString());
     }
 

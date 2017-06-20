@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".NewsActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            />
         <activity android:name=".SourceActivity" />
         <activity android:name=".SettingsActivity"></activity>
     </application>

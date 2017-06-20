@@ -35,7 +35,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
 
     private TextView emptyStateTextView;
 
-    private ArrayList<NewsArticle> loadedData;
+    private  View rootView;
 
     public OptionTwoFragment() {
         // Required empty public constructor
@@ -45,19 +45,11 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.news_list, container, false);
+        rootView = inflater.inflate(R.layout.news_list, container, false);
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
-        if (savedInstanceState == null) {
-            mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
-        } else {
-            if (savedInstanceState.getSerializable("loaded") != null) {
-                mAdapter = new NewsAdapter(getActivity(), (ArrayList<NewsArticle>) savedInstanceState.getSerializable("loaded"));
-            } else {
-                mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
-            }
-        }
+        mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
 
         emptyStateTextView = (TextView) rootView.findViewById(R.id.empty_view);
         newsListView.setEmptyView(emptyStateTextView);
@@ -87,33 +79,24 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
             loadingIndicator.setVisibility(View.GONE);
             emptyStateTextView.setText(R.string.no_internet_connection);
         }
+
         return rootView;
     }
 
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
+        View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
-
-        System.out.println("onLoadFinished freg 2");
 
         emptyStateTextView.setText(R.string.no_news);
 
         mAdapter.clear();
 
         if (newsArticles != null && !newsArticles.isEmpty()) {
-            loadedData = new ArrayList<>();
-            loadedData.addAll(newsArticles);
             mAdapter.addAll(newsArticles);
         }
 
        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("loaded", loadedData);
     }
 
     @Override
@@ -129,6 +112,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
                 //uriBuilder.appendQueryParameter("sortBy", "latest");
             }
         }
+
         return new NewsLoader(getActivity(), uriBuilder.toString());
     }
 
