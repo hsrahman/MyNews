@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArraySet;
 import android.view.LayoutInflater;
@@ -84,7 +83,6 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
         return rootView;
     }
 
-
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
         View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
@@ -98,7 +96,6 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             mAdapter.addAll(newsArticles);
         }
     }
-
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle) {
@@ -121,5 +118,4 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoaderReset(Loader<List<NewsArticle>> loader) {
         mAdapter.clear();
     }
-
 }

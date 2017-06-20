@@ -35,7 +35,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
 
     private TextView emptyStateTextView;
 
-    private  View rootView;
+    private View rootView;
 
     public OptionTwoFragment() {
         // Required empty public constructor
@@ -96,7 +96,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
             mAdapter.addAll(newsArticles);
         }
 
-       getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
+        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
     }
 
     @Override

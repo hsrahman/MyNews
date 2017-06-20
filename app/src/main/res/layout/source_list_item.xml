@@ -24,4 +24,5 @@
         android:layout_centerVertical="true"
         android:id="@+id/remove_source"
         android:visibility="gone"/>
+
 </RelativeLayout>
