@@ -35,6 +35,8 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
 
     private TextView emptyStateTextView;
 
+    private View rootView;
+
     public OptionTwoFragment() {
         // Required empty public constructor
     }
@@ -43,7 +45,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.news_list, container, false);
+        rootView = inflater.inflate(R.layout.news_list, container, false);
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
@@ -83,10 +85,11 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
+        View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
-        System.out.println("onLoadFinished freg 2");
+        System.out.print("onLoadFinished frag 2");
+        System.out.println(loadingIndicator.getVisibility() == View.GONE);
 
         emptyStateTextView.setText(R.string.no_news);
 
@@ -96,7 +99,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
             mAdapter.addAll(newsArticles);
         }
 
-       getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
+        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
     }
 
     @Override

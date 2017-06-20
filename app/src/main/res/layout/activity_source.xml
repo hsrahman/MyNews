@@ -19,7 +19,6 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/categories" />
 
-    <!-- Loading indicator is only shown before the first load -->
     <ProgressBar
         android:id="@+id/source_loading_indicator"
         style="@style/Widget.AppCompat.ProgressBar"

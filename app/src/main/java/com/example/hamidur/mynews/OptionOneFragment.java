@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArraySet;
 import android.view.LayoutInflater;
@@ -36,20 +35,16 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
 
     private TextView emptyStateTextView;
 
+    private View rootView;
+
     public OptionOneFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.news_list, container, false);
+        rootView = inflater.inflate(R.layout.news_list, container, false);
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
@@ -87,13 +82,10 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
         return rootView;
     }
 
-
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
+        View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
-
-        System.out.println("onLoadFinished freg 1");
 
         emptyStateTextView.setText(R.string.no_news);
 
@@ -103,7 +95,6 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
             mAdapter.addAll(newsArticles);
         }
     }
-
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle) {
@@ -125,5 +116,4 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoaderReset(Loader<List<NewsArticle>> loader) {
         mAdapter.clear();
     }
-
 }

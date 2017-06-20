@@ -35,6 +35,8 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
 
     private TextView emptyStateTextView;
 
+    private View rootView;
+
     public OptionThreeFragment() {
         // Required empty public constructor
     }
@@ -42,7 +44,7 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.news_list, container, false);
+        rootView = inflater.inflate(R.layout.news_list, container, false);
 
         ListView newsListView = (ListView) rootView.findViewById(R.id.list);
 
@@ -82,10 +84,8 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
-        View loadingIndicator = getActivity().findViewById(R.id.loading_indicator);
+        View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
-
-        System.out.println("onLoadFinished freg 3");
 
         emptyStateTextView.setText(R.string.no_news);
 
