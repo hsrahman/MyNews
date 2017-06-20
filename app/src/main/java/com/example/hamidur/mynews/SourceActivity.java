@@ -19,6 +19,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,14 +54,16 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         sourceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Gson gson = new Gson();
                 Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
                 if(!currentSource.isSelected()) {
                     if (prefs.size() != MAX_SELECTABLE) {
+
                         currentSource.setSelected(true);
-                        prefs.add(currentSource.getId());
+                        prefs.add(gson.toJson(currentSource));
                         editor.clear();
                         editor.putStringSet("source", prefs);
                         editor.commit();
@@ -69,7 +73,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 } else {
                     currentSource.setSelected(false);
-                    prefs.remove(mAdapter.getItem(position).getId());
+                    prefs.remove(gson.toJson(mAdapter.getItem(position)));
                     editor.putStringSet("source", prefs); // may need to be done manually
                     editor.commit();
                     view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.unselected_source));
@@ -152,8 +156,10 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     private String getPrefInSet(String id){
         Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+        Gson gson = new Gson();
         for(String pref : prefs){
-            if(pref.equals(id)){
+            Source source = gson.fromJson(pref, Source.class);
+            if(source.getId().equals(id)){
                 return pref;
             }
         }

@@ -43,6 +43,10 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent sourceActivity = new Intent(SettingsActivity.this, SourceActivity.class);
                 startActivity(sourceActivity);
                 break;
+            case "My Source" :
+                Intent orderByActivity = new Intent(SettingsActivity.this, OrderByActivity.class);
+                startActivity(orderByActivity);
+                break;
 
         }
     }
