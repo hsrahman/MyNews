@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -99,14 +101,16 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle) {
-        Set<String> ids = getActivity().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+        Set<String> sources = getActivity().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         int counter = 0;
-        for (String id : ids) {
+        for (String source : sources) {
             counter++;
             if (counter == 1) {
-                uriBuilder.appendQueryParameter("source", id);
+                Gson gson = new Gson();
+                Source obj = gson.fromJson(source, Source.class);
+                uriBuilder.appendQueryParameter("source", obj.getId());
                 //uriBuilder.appendQueryParameter("sortBy", "latest");
             }
         }

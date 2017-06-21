@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 /**
@@ -16,8 +18,10 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
     public SimpleFragmentPagerAdapter(FragmentManager fm, List<String> sources) {
         super(fm);
         tabTitles = new String[sources.size()];
+        Gson gson = new Gson();
         for(int i = 0; i < sources.size(); i++){
-            tabTitles[i] = sources.get(i);
+            Source source = gson.fromJson(sources.get(i), Source.class);
+            tabTitles[i] = source.getName();
         }
     }
 
