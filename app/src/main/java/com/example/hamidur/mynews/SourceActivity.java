@@ -157,7 +157,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     private String getPrefInSet(String id){
         Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
         Gson gson = new Gson();
-        for(String pref : prefs){
+        for(String pref : prefs) {
             Source source = gson.fromJson(pref, Source.class);
             if(source.getId().equals(id)){
                 return pref;

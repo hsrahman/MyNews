@@ -5,4 +5,5 @@
     <color name="colorAccent">#009dff</color>
     <color name="selected_source">#2ed74d</color>
     <color name="unselected_source">#00ffffff</color>
+    <color name="close_btn">#ff0000</color>
 </resources>

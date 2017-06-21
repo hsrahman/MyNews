@@ -39,7 +39,7 @@ public class OrderByActivity extends AppCompatActivity {
         orderViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final Dialog dialog = new Dialog(getApplicationContext());
+                final Dialog dialog = new Dialog(OrderByActivity.this);
                 dialog.setContentView(R.layout.dialog);
                 dialog.setTitle("Order By");
                 Gson gson = new Gson();
@@ -47,11 +47,15 @@ public class OrderByActivity extends AppCompatActivity {
                     Source source = gson.fromJson(s, Source.class);
                     if(source.getName().equals(parent.getItemAtPosition(position))){
                         for(int i = 0; i < source.getSortByAvailable().length; i++){
-                            RadioButton r = (RadioButton) dialog.findViewById(getCorrectOrderById(source.getSortByAvailable()[i]));
-                            r.setVisibility(View.VISIBLE);
+                            int radioid = getCorrectOrderById(source.getSortByAvailable()[i]);
+                            if(radioid != -1) {
+                                RadioButton r = (RadioButton) dialog.findViewById(radioid);
+                                r.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 }
+                dialog.show();
             }
         });
 
@@ -68,5 +72,7 @@ public class OrderByActivity extends AppCompatActivity {
             case "latest":
                 return R.id.latest_radio_button;
         }
+
+        return -1;
     }
 }

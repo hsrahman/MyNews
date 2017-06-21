@@ -23,10 +23,11 @@ public class Source {
 
     private boolean selected;
 
-    public Source(String id, String name, String category) {
+    public Source(String id, String name, String category, String[] sortByAvailable) {
         this.id = id;
         this.name = name;
         this.category = category;
+        this.sortByAvailable = sortByAvailable;
         selected = false;
     }
 

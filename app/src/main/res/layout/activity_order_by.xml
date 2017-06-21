@@ -5,12 +5,10 @@
     android:layout_height="match_parent"
     tools:context="com.example.hamidur.mynews.OrderByActivity">
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/order_list"
+    <ListView
+        android:id="@+id/order_by_list"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:orientation="vertical" />
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

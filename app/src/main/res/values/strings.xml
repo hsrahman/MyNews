@@ -9,6 +9,8 @@
 
     <string name="my_source"></string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="order_by_top">Top</string>
+    <string name="order_by_popular">Popular</string>
+    <string name="order_by_latest">Latest</string>
+
 </resources>
