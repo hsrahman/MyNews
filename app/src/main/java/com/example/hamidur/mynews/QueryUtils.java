@@ -99,7 +99,12 @@ public class QueryUtils {
                 String id = currentSource.getString("id");
                 String name = currentSource.getString("name");
                 String category = currentSource.getString("category");
-                sourcesList.add(new Source(id, name, category));
+                JSONArray orderByJson = currentSource.getJSONArray("sortBysAvailable");
+                String [] orderBy = new String[orderByJson.length()];
+                for (int j = 0; j < orderByJson.length(); j++) {
+                    orderBy[i] = orderByJson.getString(j);
+                }
+                sourcesList.add(new Source(id, name, category, orderBy));
             }
         } catch (JSONException e) {
             Log.e("QueryUtils", "Problem parsing the source JSON results", e);
