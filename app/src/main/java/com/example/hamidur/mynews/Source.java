@@ -74,5 +74,7 @@ public class Source {
         return sortByAvailable;
     }
 
-
+    public void setCurrentSortBy(String currentSortBy) {
+        this.currentSortBy = currentSortBy;
+    }
 }
