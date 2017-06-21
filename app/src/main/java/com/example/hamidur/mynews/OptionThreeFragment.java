@@ -112,7 +112,7 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
                 Gson gson = new Gson();
                 Source obj = gson.fromJson(source, Source.class);
                 uriBuilder.appendQueryParameter("source", obj.getId());
-                //uriBuilder.appendQueryParameter("sortBy", "latest");
+                uriBuilder.appendQueryParameter("sortBy", obj.getCurrentSortBy());
             }
         }
 

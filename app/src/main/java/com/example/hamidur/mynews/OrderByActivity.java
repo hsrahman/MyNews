@@ -6,6 +6,7 @@ import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -41,7 +42,6 @@ public class OrderByActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Dialog dialog = new Dialog(OrderByActivity.this);
                 dialog.setContentView(R.layout.dialog);
-                dialog.setTitle("Order By");
                 Gson gson = new Gson();
                 for(String s : getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>())){
                     Source source = gson.fromJson(s, Source.class);
@@ -50,6 +50,7 @@ public class OrderByActivity extends AppCompatActivity {
                             int radioid = getCorrectOrderById(source.getSortByAvailable()[i]);
                             if(radioid != -1) {
                                 RadioButton r = (RadioButton) dialog.findViewById(radioid);
+                                if (source.getCurrentSortBy().equals(r.getText().toString().toLowerCase())) r.setChecked(true);
                                 r.setVisibility(View.VISIBLE);
                             }
                         }

@@ -113,7 +113,7 @@ public class OptionTwoFragment extends Fragment implements LoaderManager.LoaderC
                 Gson gson = new Gson();
                 Source obj = gson.fromJson(source, Source.class);
                 uriBuilder.appendQueryParameter("source", obj.getId());
-                //uriBuilder.appendQueryParameter("sortBy", "latest");
+                uriBuilder.appendQueryParameter("sortBy", obj.getCurrentSortBy());
             }
         }
 

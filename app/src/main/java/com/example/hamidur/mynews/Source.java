@@ -19,6 +19,8 @@ public class Source {
 
     private String description;
 
+    private String currentSortBy;
+
     private String[] sortByAvailable;
 
     private boolean selected;
@@ -28,6 +30,7 @@ public class Source {
         this.name = name;
         this.category = category;
         this.sortByAvailable = sortByAvailable;
+        currentSortBy = sortByAvailable[0];
         selected = false;
     }
 
@@ -65,7 +68,11 @@ public class Source {
         return description;
     }
 
+    public String getCurrentSortBy() { return currentSortBy; }
+
     public String[] getSortByAvailable() {
         return sortByAvailable;
     }
+
+
 }
