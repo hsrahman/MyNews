@@ -13,10 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -32,7 +30,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     private HashMap <String, List<Source>> categoryToSource;
 
-    private String selectedCategory = "sport";
+    private String selectedCategory = "science-and-nature";
 
     private static final int SOURCE_LOADER_ID = 2;
 
@@ -113,6 +111,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     public void onLoadFinished(Loader<List<Source>> loader, List<Source> sources) {
         View loadingIndicator = findViewById(R.id.source_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
+
         for(int i = 0; i < sources.size(); i++){
             Source s = sources.get(i);
             // check newly created sources has been selected therefor it has to be set as selected
@@ -123,14 +122,18 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             if(categoryToSource.get(s.getCategory()) == null){ // if list doesn't exist yet
                 categoryToSource.put(s.getCategory(), new ArrayList<Source>());
             }
-            categoryToSource.get(s.getCategory()).add(s);
+
+            if(!existsInCollection(s, s.getId())){
+                categoryToSource.get(s.getCategory()).add(s);
+            }
+
         }
 
         Spinner spinner = (Spinner) findViewById(R.id.categories);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, new ArrayList<>(categoryToSource.keySet()));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this, new ArrayList<>(categoryToSource.keySet()));
+
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(this);
 
         mAdapter.clear();
@@ -138,6 +141,15 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         if (sources != null && !sources.isEmpty()) {
             mAdapter.addAll(categoryToSource.get(selectedCategory));
         }
+    }
+
+    private boolean existsInCollection(Source itemInCollection, String itemToBeChecked){
+        for(int j = 0; j < categoryToSource.get(itemInCollection.getCategory()).size(); j++){
+            if(categoryToSource.get(itemInCollection.getCategory()).get(j).getId().equals(itemToBeChecked)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
