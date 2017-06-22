@@ -18,13 +18,4 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/reset"
-        android:text="Clear Prefs!"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_below="@+id/news"
-        android:layout_centerHorizontal="true" />
-
 </RelativeLayout>
