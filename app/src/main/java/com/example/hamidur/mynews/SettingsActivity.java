@@ -1,6 +1,10 @@
 package com.example.hamidur.mynews;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -23,6 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
         List<String> settingsOption = new ArrayList<>();
         settingsOption.add("Change Sources");
         settingsOption.add("My Source");
+        settingsOption.add("Clear All Sources");
+
 
         settingsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, settingsOption);
 
@@ -47,7 +53,37 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent orderByActivity = new Intent(SettingsActivity.this, OrderByActivity.class);
                 startActivity(orderByActivity);
                 break;
+            case "Clear All Sources" :
+                createPrefDialouge();
+                break;
 
         }
+    }
+
+    private void createPrefDialouge () {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(SettingsActivity.this);
+        builder1.setMessage("Do you want to remove all your currently selected sources?");
+        builder1.setCancelable(true);
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.remove("source");
+                        editor.clear();
+                        editor.commit();
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+       builder1.create().show();
     }
 }

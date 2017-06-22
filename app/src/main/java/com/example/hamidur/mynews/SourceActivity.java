@@ -61,7 +61,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                 Source currentSource =  mAdapter.getItem(position);
                 if(!currentSource.isSelected()) {
                     if (prefs.size() != MAX_SELECTABLE) {
-
                         currentSource.setSelected(true);
                         prefs.add(gson.toJson(currentSource));
                         editor.clear();
@@ -72,8 +71,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                         Toast.makeText(getApplicationContext(), "You cannot select more then 3 sources", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    currentSource.setSelected(false);
                     prefs.remove(gson.toJson(mAdapter.getItem(position)));
+                    currentSource.setSelected(false);
                     editor.putStringSet("source", prefs); // may need to be done manually
                     editor.commit();
                     view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.unselected_source));
@@ -108,7 +107,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
     @Override
@@ -127,6 +125,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             }
 
             categoryToSource.get(s.getCategory()).add(s);
+
         }
 
         Spinner spinner = (Spinner) findViewById(R.id.categories);
