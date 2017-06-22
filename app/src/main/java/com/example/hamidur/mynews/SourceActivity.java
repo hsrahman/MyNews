@@ -123,9 +123,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             if(categoryToSource.get(s.getCategory()) == null){ // if list doesn't exist yet
                 categoryToSource.put(s.getCategory(), new ArrayList<Source>());
             }
-
             categoryToSource.get(s.getCategory()).add(s);
-
         }
 
         Spinner spinner = (Spinner) findViewById(R.id.categories);
