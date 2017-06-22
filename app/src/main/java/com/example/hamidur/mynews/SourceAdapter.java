@@ -38,6 +38,8 @@ public class SourceAdapter extends ArrayAdapter<Source> {
         TextView name = (TextView) listItemView.findViewById(R.id.source_name);
         String sourceName = source.getName();
         name.setText(sourceName);
+        ImageView icon = (ImageView) listItemView.findViewById(R.id.source_icon);
+        icon.setImageResource(source.getIconId());
         if (source.isSelected()) listItemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.selected_source));
         else listItemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.unselected_source));
         return listItemView;
