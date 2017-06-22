@@ -25,12 +25,15 @@ public class Source {
 
     private boolean selected;
 
+    private int iconId;
+
     public Source(String id, String name, String category, String[] sortByAvailable) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.sortByAvailable = sortByAvailable;
         currentSortBy = sortByAvailable[0];
+        setIconId ();
         selected = false;
     }
 
@@ -76,5 +79,37 @@ public class Source {
 
     public void setCurrentSortBy(String currentSortBy) {
         this.currentSortBy = currentSortBy;
+    }
+
+    public int getIconId() { return iconId; }
+
+    private void setIconId () {
+        switch (category) {
+            case "science-and-nature" :
+                iconId = R.drawable.ic_nature;
+                break;
+            case "gaming" :
+                iconId = R.drawable.ic_game;
+                break;
+            case "music" :
+                iconId = R.drawable.ic_music;
+                break;
+            case "politics" :
+                iconId = R.drawable.ic_politics;
+                break;
+            case "technology" :
+                iconId = R.drawable.ic_tech;
+                break;
+            case "sport" :
+                iconId = R.drawable.ic_sport;
+                break;
+            case "entertainment" :
+                iconId = R.drawable.ic_entertainment;
+                break;
+            case "business" :
+                iconId = R.drawable.ic_business;
+                break;
+            default: iconId = R.drawable.ic_general;
+        }
     }
 }
