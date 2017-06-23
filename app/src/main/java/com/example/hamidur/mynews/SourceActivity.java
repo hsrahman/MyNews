@@ -132,7 +132,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         Spinner spinner = (Spinner) findViewById(R.id.categories);
         SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this, new ArrayList<>(categoryToSource.keySet()));
 
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(this);
 
