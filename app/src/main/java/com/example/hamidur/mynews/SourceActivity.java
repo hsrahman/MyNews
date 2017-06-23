@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +70,12 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                         Toast.makeText(getApplicationContext(), "You cannot select more then 3 sources", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    prefs.remove(gson.toJson(mAdapter.getItem(position)));
+                    for (Iterator<String> iterator = prefs.iterator(); iterator.hasNext();){
+                        Source s = gson.fromJson(iterator.next(), Source.class);
+                        if (s.getId().equals(mAdapter.getItem(position).getId())) {
+                            iterator.remove();
+                        }
+                    }
                     currentSource.setSelected(false);
                     editor.putStringSet("source", prefs); // may need to be done manually
                     editor.commit();
