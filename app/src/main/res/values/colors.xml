@@ -7,5 +7,6 @@
     <color name="unselected_source">#00ffffff</color>
     <color name="close_btn">#ff0000</color>
     <color name="dialog_title">#000000</color>
+    <color name="home_news">#fc5608</color>
 
 </resources>

@@ -27,11 +27,12 @@ public class Source {
 
     private int iconId;
 
-    public Source(String id, String name, String category, String[] sortByAvailable) {
+    public Source(String id, String name, String category, String country ,String[] sortByAvailable) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.sortByAvailable = sortByAvailable;
+        this.country = country;
         currentSortBy = sortByAvailable[0];
         setIconId ();
         selected = false;
