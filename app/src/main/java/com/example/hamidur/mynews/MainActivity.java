@@ -3,6 +3,7 @@ package com.example.hamidur.mynews;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
         ImageView settings = (ImageView) findViewById(R.id.settings);
         ImageView weather = (ImageView) findViewById(R.id.weather);
         ImageView about = (ImageView) findViewById(R.id.about);
+        ImageView newsApi = (ImageView) findViewById(R.id.news_api);
+        ImageView weatherApi = (ImageView) findViewById(R.id.weather_api);
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,5 +55,24 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Open about view", Toast.LENGTH_LONG).show();
             }
         });
+
+        newsApi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri newsUri = Uri.parse("https://newsapi.org/");
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
+                startActivity(websiteIntent);
+            }
+        });
+
+        weatherApi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri newsUri = Uri.parse("https://developer.weatherunlocked.com/");
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
+                startActivity(websiteIntent);
+            }
+        });
+
     }
 }
