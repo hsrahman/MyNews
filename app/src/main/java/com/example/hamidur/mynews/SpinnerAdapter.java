@@ -5,7 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -25,6 +27,16 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        return setUpLayoutView(position, convertView, parent);
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+
+        return setUpLayoutView(position, convertView, parent);
+    }
+
+    private View setUpLayoutView(int position, View convertView, ViewGroup parent){
         View listItemView = convertView;
         if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
@@ -39,7 +51,6 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         category.setText(s);
 
         return listItemView;
-
     }
 
     private int setIconId (String category) {
