@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView news = (ImageView) findViewById(R.id.news);
         ImageView settings = (ImageView) findViewById(R.id.settings);
         ImageView weather = (ImageView) findViewById(R.id.weather);
+        ImageView about = (ImageView) findViewById(R.id.about);
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,6 +43,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Open weather view", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Open about view", Toast.LENGTH_LONG).show();
             }
         });
     }
