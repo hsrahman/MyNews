@@ -1,6 +1,8 @@
 package com.example.hamidur.mynews;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +10,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,7 +19,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button news = (Button) findViewById(R.id.news);
+        ImageView news = (ImageView) findViewById(R.id.news);
+        ImageView settings = (ImageView) findViewById(R.id.settings);
+        ImageView weather = (ImageView) findViewById(R.id.weather);
+        ImageView about = (ImageView) findViewById(R.id.about);
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -24,23 +31,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.action_bar_actions, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.settings:
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 Intent settingsActivity = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(settingsActivity);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+            }
+        });
+
+        weather.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Open weather view", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Open about view", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
