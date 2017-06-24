@@ -108,23 +108,19 @@ public class OrderByActivity extends AppCompatActivity {
     }
 
     private class OrderByAdapter extends ArrayAdapter<Source>{
-        private Source source;
-        private View listItemView;
-        List<Source> allSources;
         public OrderByAdapter(Context context, List<Source> sources) {
             super(context, 0, sources);
-            allSources = sources;
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            listItemView = convertView;
+            View listItemView = convertView;
             if (listItemView == null) {
                 listItemView = LayoutInflater.from(getContext()).inflate(
                         R.layout.my_sources_list_item, parent, false);
             }
 
-            source = getItem(position);
+            Source source = getItem(position);
 
             TextView name = (TextView) listItemView.findViewById(R.id.source_name);
             name.setText(source.getName());
@@ -140,20 +136,21 @@ public class OrderByActivity extends AppCompatActivity {
             removeSource.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Set<String> prefs = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+                   Set<String> prefs = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
                     for (Iterator<String> iterator = prefs.iterator(); iterator.hasNext();){
                         Source s = gson.fromJson(iterator.next(), Source.class);
-                        if (s.getId().equals(source.getId())) {
+                        if (s.getId().equals(getItem(position).getId())) {
                             iterator.remove();
+                            break;
                         }
                     }
-                    source.setSelected(false);
+
+                    getItem(position).setSelected(false);
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putStringSet("source", prefs); // may need to be done manually
                     editor.commit();
-                    //int index = (int) v.getTag();
-                    allSources.remove(position);
+                    remove(getItem(position));
                     notifyDataSetChanged();
                 }
             });
