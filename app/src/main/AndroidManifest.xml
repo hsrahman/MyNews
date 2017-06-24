@@ -10,7 +10,8 @@
         android:icon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,14 +22,17 @@
         <activity
             android:name=".NewsActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/app_name"/>
-        <activity android:name=".SourceActivity"
-            android:label="@string/all_source_activity"/>
-        <activity android:name=".SettingsActivity"
-            android:label="@string/settings_activity"/>
-        <activity android:name=".OrderByActivity"
-            android:label="@string/order_activity"
-            ></activity>
+            android:label="@string/app_name" />
+        <activity
+            android:name=".SourceActivity"
+            android:label="@string/all_source_activity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings_activity" />
+        <activity
+            android:name=".OrderByActivity"
+            android:label="@string/order_activity" />
+        <activity android:name=".AboutActivity"></activity>
     </application>
 
 </manifest>

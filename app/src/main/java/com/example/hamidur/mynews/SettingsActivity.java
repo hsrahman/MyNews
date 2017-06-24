@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private ArrayAdapter <String> settingsAdapter;
+    private SettingsAdapter settingsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
         settingsOption.add("Clear All Sources");
 
 
-        settingsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, settingsOption);
+        settingsAdapter = new SettingsAdapter(this, settingsOption);
 
         ListView settingsView = (ListView) findViewById(R.id.settings_view);
         settingsView.setAdapter(settingsAdapter);
