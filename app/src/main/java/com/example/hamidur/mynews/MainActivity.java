@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView about = (ImageView) findViewById(R.id.about);
         ImageView newsApi = (ImageView) findViewById(R.id.news_api);
         ImageView weatherApi = (ImageView) findViewById(R.id.weather_api);
+        ImageView currencyApi = (ImageView) findViewById(R.id.currency);
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
                 Uri newsUri = Uri.parse("https://developer.weatherunlocked.com/");
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
                 startActivity(websiteIntent);
+            }
+        });
+
+        currencyApi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Exchange Rates coming soon...", Toast.LENGTH_LONG).show();
             }
         });
 
