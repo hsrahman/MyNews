@@ -1,7 +1,11 @@
 package com.example.hamidur.mynews;
 
+import android.app.ActivityOptions;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -48,7 +52,12 @@ public class MainActivity extends AppCompatActivity {
         about.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Open about view", Toast.LENGTH_LONG).show();
+                Intent aboutActivity = new Intent(MainActivity.this, AboutActivity.class);
+
+               /* ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0,
+                        0, v.getWidth(), v.getHeight());*/
+
+                startActivity(aboutActivity/*, options.toBundle()*/);
             }
         });
 
@@ -78,4 +87,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 }

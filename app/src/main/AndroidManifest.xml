@@ -36,6 +36,10 @@
         <activity android:name=".WeatherActivity"
             android:screenOrientation="portrait"
             android:label="@string/my_weather"></activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/about_activity"/>
+
     </application>
 
 </manifest>
