@@ -1,6 +1,10 @@
 package com.example.hamidur.mynews;
 
+import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.Loader;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,14 +18,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
 
-    WeatherAdapter forcastAdapter;
+    private String WEATHERAPI_REQUEST_URL_WEATHER = "http://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast tomorrow temperature gt 16 include7dayforecast?app_id={APP_ID}&app_key={APP_KEY}";
+
+    private static final int WEATHER_LOADER_ID = 3;
+
+    private WeatherAdapter forcastAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +58,37 @@ public class WeatherActivity extends AppCompatActivity {
         forcastView.setAdapter(forcastAdapter);
 
 
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Weather>> loader, List<Weather> data) {
+        // setting current weather from first item in the list
+        TextView date = (TextView) findViewById(R.id.weather_date);
+        date.setText(data.get(0).getDate());
+
+        TextView day = (TextView) findViewById(R.id.weather_day);
+        day.setText(data.get(0).getDay());
+
+        TextView description = (TextView) findViewById(R.id.weather_description);
+        description.setText(data.get(0).getDescription() + " " + data.get(0).getMinTemp() + "\u00B0" + " - " + data.get(0).getMaxTemp() + "\u00B0");
+
+        ImageView currentDayIcon = (ImageView) findViewById(R.id.weather_icon);
+        Glide.with(this).load("http://www.weatherunlocked.com/Images/icons/1/" + data.get(0).getImgUrl()).into(currentDayIcon);
+
+        TextView temp = (TextView) findViewById(R.id.weather_temp);
+        temp.setText(data.get(0).getTemp());
+
+        // setting 7-days forcast data
+    }
+
+    @Override
+    public Loader<List<Weather>> onCreateLoader(int id, Bundle args) {
+        Uri baseUri = Uri.parse(WEATHERAPI_REQUEST_URL_WEATHER);
+        return new WeatherLoader(this, baseUri.toString());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Weather>> loader) {
     }
 
     private class WeatherAdapter extends  RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
@@ -93,6 +134,30 @@ public class WeatherActivity extends AppCompatActivity {
                 forcastDay = (TextView) itemView.findViewById(R.id.forcast_day);
 
             }
+        }
+
+    }
+
+    private class WeatherLoader extends AsyncTaskLoader<List<Weather>> {
+
+        private String mUrl;
+
+        public WeatherLoader (Context context, String url) {
+            super(context);
+            mUrl = url;
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public List<Weather> loadInBackground() {
+            if (mUrl == null) return null;
+            // Perform the network request, parse the response, and extract a list of earthquakes.
+            List<Weather> allWeathers = QueryUtils.fetchWeatherData(mUrl);
+            return allWeathers;
         }
 
     }
