@@ -125,6 +125,50 @@ public class QueryUtils {
         return sources;
     }
 
+    private static List<Weather> extractWeatherFromJson(String weatherJson){
+        if(TextUtils.isEmpty(weatherJson))
+            return null;
+
+        List<Weather> weatherList = new ArrayList<>();
+
+        try{
+            JSONObject baseJsonResponse = new JSONObject(weatherJson);
+            JSONObject forcastWeather = baseJsonResponse.getJSONObject("ForecastWeather");
+            JSONArray days = forcastWeather.getJSONArray("Days");
+            for(int i = 0; i < days.length(); i++) {
+                JSONObject currentDay = days.getJSONObject(i);
+                String date = currentDay.getString("date");
+                String maxTemp = currentDay.getString("temp_max_c");
+                String minTemp = currentDay.getString("temp_min_c");
+                JSONArray timeFrame = currentDay.getJSONArray("Timeframes");
+                JSONObject currentTimeFrame = timeFrame.getJSONObject(0);
+                String description = currentTimeFrame.getString("wx_desc");
+                String imgUrl = currentTimeFrame.getString("wx_icon");
+                String currentTemp = currentTimeFrame.getString("temp_c");
+
+                weatherList.add(new Weather(date, minTemp, maxTemp, currentTemp, description, imgUrl));
+            }
+
+        } catch (JSONException e) {
+            Log.e("QueryUtils", "Problem parsing the source JSON results", e);
+        }
+
+        return weatherList;
+
+    }
+
+    public List<Weather> fetchWeatherData(String requestUrl){
+        URL url =  createUrl(requestUrl);
+        String jsonResponse = null;
+        try {
+            jsonResponse = createHttpRequest(url);
+        } catch (IOException io) {
+            Log.e(LOG_TAG, "Problem making the HTTP request");
+        }
+        List<Weather> weathers = extractWeatherFromJson(jsonResponse);
+        return weathers;
+    }
+
     /**
      * Returns new URL object from the given string URL.
      */

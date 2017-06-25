@@ -20,14 +20,15 @@
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:paddingTop="10dp"
-
+            android:id="@+id/forcast_min_max"
             />
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@drawable/clear"
-            android:layout_weight="0.4"/>
+            android:layout_weight="0.4"
+            android:id="@+id/forcast_icon"/>
 
         <TextView
             android:layout_width="wrap_content"
