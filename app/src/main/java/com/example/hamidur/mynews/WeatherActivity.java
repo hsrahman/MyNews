@@ -4,6 +4,8 @@ import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +29,8 @@ import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
 
-    private String WEATHERAPI_REQUEST_URL_WEATHER = "http://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast tomorrow temperature gt 16 include7dayforecast?app_id={APP_ID}&app_key={APP_KEY}";
+    private String WEATHERAPI_REQUEST_URL_WEATHER = "https://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555";
+    private String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
 
     private static final int WEATHER_LOADER_ID = 3;
 
@@ -38,26 +41,17 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 
-        List<Weather> forcast = new ArrayList<>();
-        forcast.add(new Weather("Monday") );
-        forcast.add(new Weather("Tuesday") );
-        forcast.add(new Weather("Wednesday") );
-        forcast.add(new Weather("Thursday") );
-        forcast.add(new Weather("Friday") );
-        forcast.add(new Weather("Saturday") );
-        forcast.add(new Weather("Sunday") );
 
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        forcastAdapter = new WeatherAdapter(this, forcast);
+        if(networkInfo != null && networkInfo.isConnected()){
+            LoaderManager loaderManager = getLoaderManager();
 
-        RecyclerView forcastView = (RecyclerView) findViewById(R.id.weather_forcast_list);
-        forcastView.setLayoutManager(layoutManager);
-        forcastView.setAdapter(forcastAdapter);
-
-
+            loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+        }
     }
 
     @Override
@@ -76,9 +70,17 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         Glide.with(this).load("http://www.weatherunlocked.com/Images/icons/1/" + data.get(0).getImgUrl()).into(currentDayIcon);
 
         TextView temp = (TextView) findViewById(R.id.weather_temp);
-        temp.setText(data.get(0).getTemp());
+        temp.setText(data.get(0).getTemp()+ "\u00B0");
 
         // setting 7-days forcast data
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        forcastAdapter = new WeatherAdapter(this, data);
+
+        RecyclerView forcastView = (RecyclerView) findViewById(R.id.weather_forcast_list);
+        forcastView.setLayoutManager(layoutManager);
+        forcastView.setAdapter(forcastAdapter);
     }
 
     @Override
@@ -114,8 +116,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         @Override
         public void onBindViewHolder(WeatherAdapter.ViewHolder holder, int position) {
             Weather weather = allForcast.get(position);
-            TextView day = holder.forcastDay;
-            day.setText(weather.getDay());
+            holder.forcastDay.setText(weather.getDay());
+            Glide.with(WeatherActivity.this).load(IMG_URL +weather.getImgUrl()).into(holder.forcastIcon);
+            holder.forcastTemps.setText(weather.getMinTemp() + "\u00B0" + " - " + weather.getMaxTemp()+ "\u00B0");
         }
 
 
@@ -127,37 +130,16 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         public class ViewHolder extends RecyclerView.ViewHolder {
 
             private TextView forcastDay;
+            private ImageView forcastIcon;
+            private TextView forcastTemps;
 
             public ViewHolder(View itemView) {
                 super(itemView);
-
                 forcastDay = (TextView) itemView.findViewById(R.id.forcast_day);
+                forcastIcon = (ImageView) itemView.findViewById(R.id.forcast_icon);
+                forcastTemps = (TextView) itemView.findViewById(R.id.forcast_min_max);
 
             }
-        }
-
-    }
-
-    private class WeatherLoader extends AsyncTaskLoader<List<Weather>> {
-
-        private String mUrl;
-
-        public WeatherLoader (Context context, String url) {
-            super(context);
-            mUrl = url;
-        }
-
-        @Override
-        protected void onStartLoading() {
-            forceLoad();
-        }
-
-        @Override
-        public List<Weather> loadInBackground() {
-            if (mUrl == null) return null;
-            // Perform the network request, parse the response, and extract a list of earthquakes.
-            List<Weather> allWeathers = QueryUtils.fetchWeatherData(mUrl);
-            return allWeathers;
         }
 
     }

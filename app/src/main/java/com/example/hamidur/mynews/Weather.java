@@ -9,15 +9,17 @@ import java.util.Date;
  */
 public class Weather {
 
-    private String day, date, minTemp, maxTemp, temp, description, imgUrl;
+    private String day, date, description, imgUrl;
 
-    public Weather(String date, String minTemp, String maxTemp, String temp, String description, String imgUrl) {
+    private int minTemp, maxTemp, temp;
+
+    public Weather(String date, double minTemp, double maxTemp, double temp, String description, String imgUrl) {
         this.date = date;
-        this.minTemp = minTemp;
-        this.maxTemp = maxTemp;
+        this.minTemp = removeDecimal(minTemp);
+        this.maxTemp = removeDecimal(maxTemp);;
         this.description = description;
         this.imgUrl = imgUrl;
-        this.temp = temp;
+        this.temp = removeDecimal(temp);;
 
         SimpleDateFormat inFormat = new SimpleDateFormat("dd/MM/yyyy");
         try{
@@ -30,7 +32,11 @@ public class Weather {
 
     }
 
-    public String getTemp(){
+    private int removeDecimal (double value) {
+        return (int) Math.round(value);
+    }
+
+    public int getTemp(){
         return temp;
     }
 
@@ -42,11 +48,11 @@ public class Weather {
         return date;
     }
 
-    public String getMinTemp() {
+    public int getMinTemp() {
         return minTemp;
     }
 
-    public String getMaxTemp() {
+    public int getMaxTemp() {
         return maxTemp;
     }
 

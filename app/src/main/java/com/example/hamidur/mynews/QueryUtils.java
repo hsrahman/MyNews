@@ -138,13 +138,13 @@ public class QueryUtils {
             for(int i = 0; i < days.length(); i++) {
                 JSONObject currentDay = days.getJSONObject(i);
                 String date = currentDay.getString("date");
-                String maxTemp = currentDay.getString("temp_max_c");
-                String minTemp = currentDay.getString("temp_min_c");
+                double maxTemp = currentDay.getDouble("temp_max_c");
+                double minTemp = currentDay.getDouble("temp_min_c");
                 JSONArray timeFrame = currentDay.getJSONArray("Timeframes");
                 JSONObject currentTimeFrame = timeFrame.getJSONObject(0);
                 String description = currentTimeFrame.getString("wx_desc");
                 String imgUrl = currentTimeFrame.getString("wx_icon");
-                String currentTemp = currentTimeFrame.getString("temp_c");
+                double currentTemp = currentTimeFrame.getDouble("temp_c");
 
                 weatherList.add(new Weather(date, minTemp, maxTemp, currentTemp, description, imgUrl));
             }
@@ -157,7 +157,7 @@ public class QueryUtils {
 
     }
 
-    public List<Weather> fetchWeatherData(String requestUrl){
+    public static List<Weather> fetchWeatherData(String requestUrl){
         URL url =  createUrl(requestUrl);
         String jsonResponse = null;
         try {
