@@ -130,8 +130,6 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/clear" />
 
-
-
         <LinearLayout
             android:id="@+id/weather_forcast"
             android:layout_width="match_parent"
