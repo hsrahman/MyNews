@@ -32,7 +32,6 @@
         <activity
             android:name=".OrderByActivity"
             android:label="@string/order_activity" />
-        <activity android:name=".AboutActivity" />
         <activity android:name=".WeatherActivity"
             android:screenOrientation="portrait"
             android:label="@string/my_weather"></activity>

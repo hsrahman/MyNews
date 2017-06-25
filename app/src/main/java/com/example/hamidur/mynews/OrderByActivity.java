@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class OrderByActivity extends AppCompatActivity {
 
-    private OrderByAdapter mAdapter;
+    private SourceAdapter mAdapter;
     private final Gson gson = new Gson();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class OrderByActivity extends AppCompatActivity {
             options.add(source);
         }
 
-        mAdapter = new OrderByAdapter(this, options);
+        mAdapter = new SourceAdapter(this, options);
 
         orderViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -107,57 +107,4 @@ public class OrderByActivity extends AppCompatActivity {
         return -1;
     }
 
-    private class OrderByAdapter extends ArrayAdapter<Source>{
-        public OrderByAdapter(Context context, List<Source> sources) {
-            super(context, 0, sources);
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View listItemView = convertView;
-            if (listItemView == null) {
-                listItemView = LayoutInflater.from(getContext()).inflate(
-                        R.layout.my_sources_list_item, parent, false);
-            }
-
-            Source source = getItem(position);
-
-            TextView name = (TextView) listItemView.findViewById(R.id.source_name);
-            name.setText(source.getName());
-
-            TextView country = (TextView) listItemView.findViewById(R.id.source_country);
-            country.setText("Country: " + source.getCountry().toUpperCase());
-
-            ImageView icon = (ImageView) listItemView.findViewById(R.id.source_icon);
-            icon.setImageResource(source.getIconId());
-            //System.out.println("IMAGE " + getContext().getResources().getResourceName(source.getIconId()));
-
-            ImageView removeSource = (ImageView) listItemView.findViewById(R.id.remove_source);
-            removeSource.setTag(position);
-            removeSource.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                   Set<String> prefs = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
-                    for (Iterator<String> iterator = prefs.iterator(); iterator.hasNext();){
-                        Source s = gson.fromJson(iterator.next(), Source.class);
-                        if (s.getId().equals(getItem(position).getId())) {
-                            iterator.remove();
-                            break;
-                        }
-                    }
-
-                    getItem(position).setSelected(false);
-                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.remove("source");
-                    editor.commit();
-                    editor.putStringSet("source", prefs);
-                    editor.commit();
-                    remove(getItem(position));
-                    notifyDataSetChanged();
-                }
-            });
-            return listItemView;
-        }
-    }
 }
