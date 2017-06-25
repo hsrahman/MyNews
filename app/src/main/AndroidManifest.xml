@@ -32,7 +32,10 @@
         <activity
             android:name=".OrderByActivity"
             android:label="@string/order_activity" />
-        <activity android:name=".AboutActivity"></activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/about_activity"/>
+
     </application>
 
 </manifest>

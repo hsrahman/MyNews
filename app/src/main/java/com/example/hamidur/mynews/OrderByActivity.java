@@ -130,6 +130,7 @@ public class OrderByActivity extends AppCompatActivity {
 
             ImageView icon = (ImageView) listItemView.findViewById(R.id.source_icon);
             icon.setImageResource(source.getIconId());
+            //System.out.println("IMAGE " + getContext().getResources().getResourceName(source.getIconId()));
 
             ImageView removeSource = (ImageView) listItemView.findViewById(R.id.remove_source);
             removeSource.setTag(position);
