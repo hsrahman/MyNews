@@ -11,10 +11,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -77,6 +82,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                         }
                     }
                     currentSource.setSelected(false);
+                    editor.remove("source");
+                    editor.commit();
                     editor.putStringSet("source", prefs); // may need to be done manually
                     editor.commit();
                     view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.unselected_source));
@@ -179,4 +186,65 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         }
         return null;
     }
+
+    private class SpinnerAdapter extends ArrayAdapter<String> {
+
+
+        public SpinnerAdapter(Context context, List<String> sources) {
+            super(context,0, sources);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            return setUpLayoutView(position, convertView, parent);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+
+            return setUpLayoutView(position, convertView, parent);
+        }
+
+        private View setUpLayoutView(int position, View convertView, ViewGroup parent){
+            View listItemView = convertView;
+            if (listItemView == null) {
+                listItemView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.spinner_item, parent, false);
+            }
+
+            String s = getItem(position);
+
+            ImageView sourceIcon = (ImageView) listItemView.findViewById(R.id.source_icon);
+            sourceIcon.setImageResource(setIconId(s));
+            TextView category = (TextView) listItemView.findViewById(R.id.category);
+            category.setText(s);
+
+            return listItemView;
+        }
+
+        private int setIconId (String category) {
+            switch (category) {
+                case "science-and-nature":
+                    return R.drawable.ic_nature;
+                case "gaming":
+                    return R.drawable.ic_game;
+                case "music":
+                    return R.drawable.ic_music;
+                case "politics":
+                    return R.drawable.ic_politics;
+                case "technology":
+                    return R.drawable.ic_tech;
+                case "sport":
+                    return R.drawable.ic_sport;
+                case "entertainment":
+                    return R.drawable.ic_entertainment;
+                case "business":
+                    return R.drawable.ic_business;
+                default:
+                    return R.drawable.ic_general;
+            }
+        }
+    }
+
 }

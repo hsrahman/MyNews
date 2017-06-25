@@ -9,6 +9,8 @@
     <color name="dialog_title">#000000</color>
     <color name="dialog_title_bck">#FFCC80</color>
     <color name="dialog_bck">#FFF8E1</color>
-    <color name="home_news">#fc5608</color>
+    <color name="menu_font_color">#fc5608</color>
+
+    <color name="weather_header_bck">#5bbff0</color>
 
 </resources>

@@ -148,7 +148,9 @@ public class OrderByActivity extends AppCompatActivity {
                     getItem(position).setSelected(false);
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putStringSet("source", prefs); // may need to be done manually
+                    editor.remove("source");
+                    editor.commit();
+                    editor.putStringSet("source", prefs);
                     editor.commit();
                     remove(getItem(position));
                     notifyDataSetChanged();

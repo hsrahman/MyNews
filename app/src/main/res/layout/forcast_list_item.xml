@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="100dp"
+    android:layout_height="match_parent">
+
+    <!-- Test Data Sample Start -->
+    <LinearLayout
+        android:layout_width="99.8dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="-10\u00B0/1\u00B0"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+
+            />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/clear"
+            android:layout_weight="0.4"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="Monday"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:paddingBottom="10dp"
+            android:id="@+id/forcast_day"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="0.2dp"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:background="@android:color/darker_gray"/>
+    <!-- Test Data Sample End -->
+</LinearLayout>
