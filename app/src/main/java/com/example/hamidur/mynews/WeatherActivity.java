@@ -45,17 +45,18 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     private static final String WEATHERAPI_REQUEST_URL_WEATHER = "https://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555";
     private static final String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
 
+    LocationManager locationManager;
+
     private static final int REQUEST_CODE = 1;
 
     private static final int WEATHER_LOADER_ID = 3;
 
-    private double lat, longtitude;
+    private Location loc = null;
 
     private final LocationListener listener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            lat = location.getLatitude();
-            longtitude = location.getLongitude();
+            loc = location;
         }
 
         @Override
@@ -81,6 +82,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -162,18 +164,23 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     private void getLocationInformation(){
         Location location = null;
         try {
-            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,2000, 10, listener);
-            location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            //System.out.println("LAT: " + location.getLatitude() + " LONG " + location.getLongitude());
-            List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            TextView countryCode = (TextView) findViewById(R.id.weather_country);
-            countryCode.setText(addresses.get(0).getCountryCode());
-            TextView city = (TextView) findViewById(R.id.weather_city);
-            city.setText(addresses.get(0).getLocality());
 
-
+            if (location != null) {
+                List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                if (!addresses.isEmpty()) {
+                    TextView countryCode = (TextView) findViewById(R.id.weather_country);
+                    countryCode.setText(addresses.get(0).getCountryCode());
+                    TextView city = (TextView) findViewById(R.id.weather_city);
+                    city.setText(addresses.get(0).getLocality());
+                } else {
+                    Toast.makeText(this, "Failed to get any locations for Lat: " + location.getLatitude() + " and Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Failed to get any location information", Toast.LENGTH_SHORT).show();
+                //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000, 20, listener);
+            }
         } catch (SecurityException s){
             System.out.println("Permission denied");
         } catch (IOException io){
