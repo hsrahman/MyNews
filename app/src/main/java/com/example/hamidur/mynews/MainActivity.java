@@ -4,7 +4,10 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,8 +47,42 @@ public class MainActivity extends AppCompatActivity {
         weather.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent newsActivity = new Intent(MainActivity.this, WeatherActivity.class);
-                startActivity(newsActivity);
+
+                int locationMode = 0;
+                try {
+                    locationMode = Settings.Secure.getInt(getApplicationContext().getContentResolver(), Settings.Secure.LOCATION_MODE);
+                } catch (Settings.SettingNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                if(locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+                    builder1.setMessage(getResources().getString(R.string.network_not_enabled));
+                    builder1.setCancelable(true);
+                    builder1.setPositiveButton(
+                            getResources().getString(R.string.open_location_settings),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivity(myIntent);
+                                }
+                            });
+
+                    builder1.setNegativeButton(
+                            getResources().getString(R.string.Cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(getApplicationContext(), "To use weather feature you must enable location settings", Toast.LENGTH_SHORT).show();
+                                    dialog.cancel();
+                                }
+                            });
+
+                    builder1.create().show();
+
+                } else {
+                    Intent newsActivity = new Intent(MainActivity.this, WeatherActivity.class);
+                    startActivity(newsActivity);
+                }
             }
         });
 

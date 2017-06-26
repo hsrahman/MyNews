@@ -17,5 +17,8 @@
     <string name="order_by_top">Top</string>
     <string name="order_by_popular">Popular</string>
     <string name="order_by_latest">Latest</string>
+    <string name="network_not_enabled">Network is not enabled</string>
+    <string name="open_location_settings">Open location settings</string>
+    <string name="Cancel">Cancel</string>
 
 </resources>
