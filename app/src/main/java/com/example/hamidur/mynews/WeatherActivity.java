@@ -5,7 +5,11 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,8 +34,10 @@ import com.bumptech.glide.Glide;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.jar.Manifest;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
@@ -42,6 +48,31 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     private static final int REQUEST_CODE = 1;
 
     private static final int WEATHER_LOADER_ID = 3;
+
+    private double lat, longtitude;
+
+    private final LocationListener listener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            lat = location.getLatitude();
+            longtitude = location.getLongitude();
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
     private WeatherAdapter forcastAdapter;
 
@@ -65,6 +96,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoadFinished(Loader<List<Weather>> loader, List<Weather> data) {
+        setLocationInformation ();
+
         // setting current weather from first item in the list
         TextView date = (TextView) findViewById(R.id.weather_date);
         date.setText(data.get(0).getDate());
@@ -104,6 +137,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private void setLocationInformation () {
         if (checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            getLocationInformation();
             Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
         } else {
             requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -116,11 +150,36 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private void requestPermission (String permission) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
+        //This code requests permission once and in future manual location activation
+        /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
             Toast.makeText(this, "GPS permission allows us to access your location, please allow in app settings for additional functionality", Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
+        }*/
+        ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
+    }
+
+    private void getLocationInformation(){
+        Location location = null;
+        try {
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            //lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,2000, 10, listener);
+            location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            //System.out.println("LAT: " + location.getLatitude() + " LONG " + location.getLongitude());
+            List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            TextView countryCode = (TextView) findViewById(R.id.weather_country);
+            countryCode.setText(addresses.get(0).getCountryCode());
+            TextView city = (TextView) findViewById(R.id.weather_city);
+            city.setText(addresses.get(0).getLocality());
+
+
+        } catch (SecurityException s){
+            System.out.println("Permission denied");
+        } catch (IOException io){
+            System.out.println("IO exception occured");
         }
+
     }
 
     @Override
@@ -128,6 +187,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         switch (requestCode) {
             case REQUEST_CODE :
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLocationInformation();
                     Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
