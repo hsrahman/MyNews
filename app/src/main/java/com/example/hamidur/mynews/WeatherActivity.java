@@ -67,20 +67,31 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
         }
+
         if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-            Intent homeActivity = new Intent(WeatherActivity.this, MainActivity.class);
-            startActivity(homeActivity);
-            Toast.makeText(this, "Your location service is not enabled" ,Toast.LENGTH_SHORT).show();
+            Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(myIntent);
+            Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
         } else {
-            ConnectivityManager connMgr = (ConnectivityManager)
-                    getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if(setLocationInformation()) {
+                ConnectivityManager connMgr = (ConnectivityManager)
+                        getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            if(networkInfo != null && networkInfo.isConnected()){
-                LoaderManager loaderManager = getLoaderManager();
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    LoaderManager loaderManager = getLoaderManager();
+
+                    loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+                }
+            } else {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -119,8 +130,13 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<List<Weather>> onCreateLoader(int id, Bundle args) {
-        setLocationInformation ();
-        Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/"+ location.getLatitude() +","+ location.getLongitude() +"/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
+        //System.out.println("https://api.weatherunlocked.com/api/trigger/"+ location.getLatitude() +","+ location.getLongitude() +"/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
+        Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/-51.5,-0.12/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
+
+        if(location != null) {
+            baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/" + location.getLatitude() + "," + location.getLongitude() + "/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
+        }
+
         return new WeatherLoader(this, baseUri.toString());
     }
 
@@ -128,12 +144,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     public void onLoaderReset(Loader<List<Weather>> loader) {
     }
 
-    private void setLocationInformation () {
+    private boolean setLocationInformation () {
         if (checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
             getLocationInformation();
             Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
+            return true;
         } else {
-            requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            //requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            return false;
         }
     }
 
