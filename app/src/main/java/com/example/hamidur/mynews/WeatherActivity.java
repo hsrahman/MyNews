@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,11 +168,15 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
             //System.out.println("LAT: " + location.getLatitude() + " LONG " + location.getLongitude());
-            List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            TextView countryCode = (TextView) findViewById(R.id.weather_country);
-            countryCode.setText(addresses.get(0).getCountryCode());
-            TextView city = (TextView) findViewById(R.id.weather_city);
-            city.setText(addresses.get(0).getLocality());
+            if(location != null) {
+                List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                TextView countryCode = (TextView) findViewById(R.id.weather_country);
+                countryCode.setText(addresses.get(0).getCountryCode());
+                TextView city = (TextView) findViewById(R.id.weather_city);
+                city.setText(addresses.get(0).getLocality());
+            }else {
+                Log.e("LOCATION ERROR", "Location is null");
+            }
 
 
         } catch (SecurityException s){
