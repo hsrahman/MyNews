@@ -3,6 +3,7 @@ package com.example.hamidur.mynews;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -14,6 +15,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,7 +44,6 @@ import java.util.jar.Manifest;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
 
-    private static final String WEATHERAPI_REQUEST_URL_WEATHER = "https://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555";
     private static final String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
 
     LocationManager locationManager;
@@ -51,29 +52,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private static final int WEATHER_LOADER_ID = 3;
 
-    private Location loc = null;
-
-    private final LocationListener listener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            loc = location;
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
+    private Location location;
 
     private WeatherAdapter forcastAdapter;
 
@@ -81,24 +60,35 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-
+        int locationMode = 0;
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        if(networkInfo != null && networkInfo.isConnected()){
-            LoaderManager loaderManager = getLoaderManager();
-
-            loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+        try {
+            locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
         }
+        if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+            Intent homeActivity = new Intent(WeatherActivity.this, MainActivity.class);
+            startActivity(homeActivity);
+            Toast.makeText(this, "Your location service is not enabled" ,Toast.LENGTH_SHORT).show();
+        } else {
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+            if(networkInfo != null && networkInfo.isConnected()){
+                LoaderManager loaderManager = getLoaderManager();
+
+                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+            }
+        }
+
+
     }
 
     @Override
     public void onLoadFinished(Loader<List<Weather>> loader, List<Weather> data) {
-        setLocationInformation ();
 
         // setting current weather from first item in the list
         TextView date = (TextView) findViewById(R.id.weather_date);
@@ -129,7 +119,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<List<Weather>> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = Uri.parse(WEATHERAPI_REQUEST_URL_WEATHER);
+        setLocationInformation ();
+        Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/"+ location.getLatitude() +","+ location.getLongitude() +"/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
         return new WeatherLoader(this, baseUri.toString());
     }
 
@@ -162,7 +153,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private void getLocationInformation(){
-        Location location = null;
+
         try {
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -182,9 +173,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000, 20, listener);
             }
         } catch (SecurityException s){
-            System.out.println("Permission denied");
+            System.out.println("SecurityException Permission denied");
         } catch (IOException io){
-            System.out.println("IO exception occured");
+            System.out.println("IOException Permission denied");
         }
 
     }
