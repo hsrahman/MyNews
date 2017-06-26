@@ -4,9 +4,14 @@ import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -26,11 +32,14 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Manifest;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
 
-    private String WEATHERAPI_REQUEST_URL_WEATHER = "https://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555";
-    private String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
+    private static final String WEATHERAPI_REQUEST_URL_WEATHER = "https://api.weatherunlocked.com/api/trigger/51.50,-0.12/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555";
+    private static final String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
+
+    private static final int REQUEST_CODE = 1;
 
     private static final int WEATHER_LOADER_ID = 3;
 
@@ -91,6 +100,40 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoaderReset(Loader<List<Weather>> loader) {
+    }
+
+    private void setLocationInformation () {
+        if (checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
+        } else {
+            requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private boolean checkPermission (String permission) {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), permission);
+        return (result == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void requestPermission (String permission) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
+            Toast.makeText(this, "GPS permission allows us to access your location, please allow in app settings for additional functionality", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE :
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 
     private class WeatherAdapter extends  RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
