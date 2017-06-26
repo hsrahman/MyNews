@@ -74,13 +74,21 @@
         android:layout_weight="0.9"
         android:background="@drawable/weather_bck_snw_clr">
 
+        <ProgressBar
+            android:id="@+id/loading_indicator"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
         <TextView
             android:id="@+id/weather_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/weather_description"
             android:layout_centerHorizontal="true"
-            android:text="-5\u00B0"
+            tools:text="0\u00B0"
+            android:visibility="invisible"
             android:textColor="#ffffff"
             android:textSize="160sp" />
 
@@ -90,7 +98,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/weather_forcast"
             android:layout_centerHorizontal="true"
-            android:text="Clear -10\u00B0/1\u00B0"
+            android:text="loading..."
             android:textColor="#ffffff"
             android:textSize="25sp" />
 
@@ -107,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="25/06/2017"
+                android:text="00/00/0000"
                 android:textColor="#ffffff"
                 android:textSize="25sp" />
 
@@ -116,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Sunday"
+                android:text="loading..."
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
 
@@ -128,7 +136,7 @@
             android:layout_height="60dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/clear" />
+            tools:src="@drawable/clear" />
 
         <LinearLayout
             android:id="@+id/weather_forcast"

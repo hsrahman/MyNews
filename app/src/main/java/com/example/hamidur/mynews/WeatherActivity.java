@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,8 +74,11 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             startActivity(myIntent);
             Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
         } else {
-
-            if(setLocationInformation()) {
+            boolean done = false;
+            while(!done){
+                done = setLocationInformation();
+            }
+            if(done) {
                 ConnectivityManager connMgr = (ConnectivityManager)
                         getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -86,12 +90,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                     loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
                 }
             } else {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-                Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
+                if (!checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                    Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
@@ -116,6 +122,10 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
         TextView temp = (TextView) findViewById(R.id.weather_temp);
         temp.setText(data.get(0).getTemp()+ "\u00B0");
+        temp.setVisibility(View.VISIBLE);
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_indicator);
+        progressBar.setVisibility(View.GONE);
 
         // setting 7-days forcast data
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -146,9 +156,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private boolean setLocationInformation () {
         if (checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            getLocationInformation();
-            Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
-            return true;
+            return getLocationInformation();
         } else {
             //requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
             return false;
@@ -170,7 +178,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
     }
 
-    private void getLocationInformation(){
+    private boolean getLocationInformation(){
 
         try {
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -183,11 +191,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                     countryCode.setText(addresses.get(0).getCountryCode());
                     TextView city = (TextView) findViewById(R.id.weather_city);
                     city.setText(addresses.get(0).getLocality());
-                } else {
-                    Toast.makeText(this, "Failed to get any locations for Lat: " + location.getLatitude() + " and Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                    return true;
                 }
             } else {
-                Toast.makeText(this, "Failed to get any location information", Toast.LENGTH_SHORT).show();
                 //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000, 20, listener);
             }
         } catch (SecurityException s){
@@ -195,7 +201,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         } catch (IOException io){
             System.out.println("IOException Permission denied");
         }
-
+        return false;
     }
 
     @Override
@@ -205,8 +211,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocationInformation();
                     Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
                 }
                 break;
         }
