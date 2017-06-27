@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,8 +75,18 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private void loadWeatherData () {
         boolean done = false;
-        while(!done){
-            done = setLocationInformation();
+        boolean isLocationUsed = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true);
+        String storedLocation = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
+        if (!isLocationUsed && !storedLocation.equals("")) {
+            Gson gson = new Gson();
+            com.example.hamidur.mynews.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.Location.class);
+            location = new Location(myLocation.getAsciiName());
+            location.setLatitude(myLocation.getLat());
+            location.setLongitude(myLocation.getLng());
+        }else {
+            while (!done) {
+                done = setLocationInformation();
+            }
         }
         if(done) {
             ConnectivityManager connMgr = (ConnectivityManager)
