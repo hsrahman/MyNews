@@ -1,16 +1,13 @@
 package com.example.hamidur.mynews;
 
 import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,22 +23,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.jar.Manifest;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
 
@@ -74,36 +65,33 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             startActivity(myIntent);
             Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
         } else {
-
-            if (!checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                /*Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);*/
-                requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
-                Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
+            if (!checkPermission()) {
+                requestPermission();
             } else {
-                boolean done = false;
-                while(!done){
-                    done = setLocationInformation();
-                }
-                if(done) {
-                    ConnectivityManager connMgr = (ConnectivityManager)
-                            getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-                    if (networkInfo != null && networkInfo.isConnected()) {
-                        LoaderManager loaderManager = getLoaderManager();
-
-                        loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
-                    }
-                }
+                loadWetaherData ();
             }
         }
 
 
+    }
+
+    private void loadWetaherData () {
+        boolean done = false;
+        while(!done){
+            done = setLocationInformation();
+        }
+        if(done) {
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+            if (networkInfo != null && networkInfo.isConnected()) {
+                LoaderManager loaderManager = getLoaderManager();
+
+                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+            }
+        }
     }
 
     @Override
@@ -151,27 +139,26 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private boolean setLocationInformation () {
-        if (checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (checkPermission()) {
             return getLocationInformation();
         } else {
-            //requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
             return false;
         }
     }
 
-    private boolean checkPermission (String permission) {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), permission);
+    private boolean checkPermission () {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
         return (result == PackageManager.PERMISSION_GRANTED);
     }
 
-    private void requestPermission (String permission) {
+    private void requestPermission () {
         //This code requests permission once and in future manual location activation
         /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
             Toast.makeText(this, "GPS permission allows us to access your location, please allow in app settings for additional functionality", Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
         }*/
-        ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
     }
 
     private boolean getLocationInformation(){
@@ -189,8 +176,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                     city.setText(addresses.get(0).getLocality());
                     return true;
                 }
-            } else {
-                //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000, 20, listener);
             }
         } catch (SecurityException s){
             System.out.println("SecurityException Permission denied");
@@ -205,8 +190,10 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         switch (requestCode) {
             case REQUEST_CODE :
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLocationInformation();
-                    Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
+                   loadWetaherData();
+                } else {
+                    finish();
+                    Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();
                 }
                 break;
         }

@@ -57,6 +57,10 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent orderByActivity = new Intent(SettingsActivity.this, OrderByActivity.class);
                 startActivity(orderByActivity);
                 break;
+            case "Weather Settings" :
+                Intent locationActivity = new Intent(SettingsActivity.this, LocationActivity.class);
+                startActivity(locationActivity);
+                break;
             case "Clear All Sources" :
                 createPrefDialouge();
                 break;
@@ -121,6 +125,8 @@ public class SettingsActivity extends AppCompatActivity {
                     return R.drawable.ic_add_circle;
                 case "My Source":
                     return R.drawable.ic_border_color;
+                case "Weather Settings":
+                    return R.drawable.ic_weather;
                 case "Clear All Sources":
                     return R.drawable.ic_delete_sweep;
                 default: return R.id.setting_icon;
