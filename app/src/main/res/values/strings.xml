@@ -6,6 +6,7 @@
     <string name="my_weather">My Weather</string>
     <string name="about_activity">About Us</string>
     <string name="location_activity">My Location</string>
+    <string name="weather_settings_activity">My Weather Settings</string>
 
     <string name="setting_name">Settings</string>
 
@@ -22,6 +23,6 @@
     <string name="Cancel">Cancel</string>
 
     <string name="location_pref">location</string>
-    <string name="source_pref">location</string>
+    <string name="source_pref">source</string>
 
 </resources>
