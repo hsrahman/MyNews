@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
                 moveToActivity(OrderByActivity.class);
                 break;
             case "Weather Settings" :
-                moveToActivity(LocationActivity.class);
+                moveToActivity(WeatherSettingsActivity.class);
                 break;
             case "Clear All Sources" :
                 createPrefDialouge();

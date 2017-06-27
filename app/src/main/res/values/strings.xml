@@ -22,6 +22,7 @@
     <string name="Cancel">Cancel</string>
 
     <string name="location_pref">location</string>
-    <string name="source_pref">location</string>
+    <string name="source_pref">source</string>
+    <string name="location_switch_pref">location_enable</string>
 
 </resources>
