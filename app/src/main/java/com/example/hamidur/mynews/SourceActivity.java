@@ -59,7 +59,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Gson gson = new Gson();
-                Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+                Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>());
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 Source currentSource =  mAdapter.getItem(position);
@@ -68,7 +68,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                         currentSource.setSelected(true);
                         prefs.add(gson.toJson(currentSource));
                         editor.clear();
-                        editor.putStringSet("source", prefs);
+                        editor.putStringSet(getResources().getString(R.string.source_pref), prefs);
                         editor.commit();
                         view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.selected_source));
                     } else {
@@ -82,9 +82,9 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
                         }
                     }
                     currentSource.setSelected(false);
-                    editor.remove("source");
+                    editor.remove(getResources().getString(R.string.source_pref));
                     editor.commit();
-                    editor.putStringSet("source", prefs); // may need to be done manually
+                    editor.putStringSet(getResources().getString(R.string.source_pref), prefs); // may need to be done manually
                     editor.commit();
                     view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.unselected_source));
                 }
@@ -176,7 +176,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
     private String getPrefInSet(String id){
-        Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+        Set<String> prefs = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>());
         Gson gson = new Gson();
         for(String pref : prefs) {
             Source source = gson.fromJson(pref, Source.class);
