@@ -61,21 +61,18 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         }
 
         if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-            Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(myIntent);
+            startActivity(new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
         } else {
             if (!checkPermission()) {
                 requestPermission();
             } else {
-                loadWetaherData ();
+                loadWeatherData ();
             }
         }
-
-
     }
 
-    private void loadWetaherData () {
+    private void loadWeatherData () {
         boolean done = false;
         while(!done){
             done = setLocationInformation();
@@ -90,6 +87,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 LoaderManager loaderManager = getLoaderManager();
 
                 loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+            } else {
+                startActivity(new Intent( Settings.ACTION_WIFI_SETTINGS));
             }
         }
     }
@@ -190,7 +189,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         switch (requestCode) {
             case REQUEST_CODE :
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                   loadWetaherData();
+                    loadWeatherData();
                 } else {
                     finish();
                     Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();

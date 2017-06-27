@@ -7,8 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 public class WeatherSettingsActivity extends AppCompatActivity {
 
@@ -18,6 +23,8 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_weather_settings);
 
         Switch locSwitch = (Switch) findViewById(R.id.location_switch);
+
+        locSwitch.setChecked(getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true));
 
         locSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -32,11 +39,33 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         weatherSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent locationActivty = new Intent(WeatherSettingsActivity.this, LocationActivity.class);
-                startActivity(locationActivty);
+                Intent locationActivity = new Intent(WeatherSettingsActivity.this, LocationActivity.class);
+                startActivity(locationActivity);
             }
         });
 
+        LinearLayout defaultLoc = (LinearLayout) findViewById(R.id.default_location);
+        defaultLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(WeatherSettingsActivity.this, "This is your default location", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Gson gson = new Gson();
+        String locStrObj = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
+        if (!locStrObj.equals("")) {
+            Location myLoc = gson.fromJson(locStrObj, Location.class);
+
+            TextView asciiName = (TextView) findViewById(R.id.location_ascii_name);
+            asciiName.setText(myLoc.getAsciiName());
+
+            TextView latLng = (TextView) findViewById(R.id.location_lat_lng);
+            latLng.setText("Lat: " + myLoc.getLat() + ", Lng: " + myLoc.getLng());
+
+            TextView timeZone = (TextView) findViewById(R.id.location_timezone);
+            timeZone.setText(myLoc.getTimeZoneId());
+        }
 
     }
 }

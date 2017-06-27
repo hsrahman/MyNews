@@ -21,7 +21,6 @@
             android:text="Enable network location"
             android:gravity="center_vertical"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/setting_icon"
             android:textStyle="bold"
             android:id="@+id/enable_text"
             android:textSize="15sp"/>
@@ -68,6 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:id="@+id/default_location"
         android:padding="5dp"
         >
 
