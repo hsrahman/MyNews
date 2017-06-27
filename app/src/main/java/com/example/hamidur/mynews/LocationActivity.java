@@ -3,6 +3,7 @@ package com.example.hamidur.mynews;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.graphics.drawable.GradientDrawable;
@@ -13,10 +14,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Random;
@@ -27,6 +32,7 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
     private static final int LOCATION_LOADER_ID = 4;
 
     private LocationAdapter mAdapter;
+    ListView list;
 
     private String search = "Lodon";
 
@@ -38,19 +44,38 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
         TextView searchBtn = (TextView) findViewById(R.id.searchLoc);
         final TextView searchText = (TextView) findViewById(R.id.search_bar);
 
+        list = (ListView) findViewById(R.id.list) ;
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                Gson gson = new Gson();
+                Location l = mAdapter.getItem(position);
+                editor.remove(getResources().getString(R.string.location_pref));
+                editor.commit();
+                editor.putString(getResources().getString(R.string.location_pref), gson.toJson(l));
+                editor.commit();
+                Toast.makeText(LocationActivity.this, "Your location is " + l.getAsciiName() , Toast.LENGTH_LONG).show();
+            }
+        });
+
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 search = searchText.getText().toString();
-                ConnectivityManager connMgr = (ConnectivityManager)
-                        getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (!search.trim().equals("")) {
+                    ConnectivityManager connMgr = (ConnectivityManager)
+                            getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    LoaderManager loaderManager = getLoaderManager();
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        LoaderManager loaderManager = getLoaderManager();
 
-                    loaderManager.initLoader(LOCATION_LOADER_ID, null, LocationActivity.this);
+                        loaderManager.initLoader(LOCATION_LOADER_ID, null, LocationActivity.this);
+                    }
                 }
             }
         });
@@ -81,10 +106,9 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
 
         TextView emptyStateTextView = (TextView) findViewById(R.id.empty_view);
 
-        ListView list = (ListView) findViewById(R.id.list) ;
+
 
         mAdapter = new LocationAdapter(this, data);
-
 
         if (data != null && !data.isEmpty()) {
             mAdapter.addAll(data);
@@ -93,6 +117,8 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
         }
 
         list.setAdapter(mAdapter);
+
+        getLoaderManager().destroyLoader(LOCATION_LOADER_ID);
     }
 
     @Override

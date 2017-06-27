@@ -59,7 +59,7 @@ public class SourceAdapter extends ArrayAdapter<Source> {
             removeSource.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Set<String> prefs = getContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+                    Set<String> prefs = getContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getContext().getResources().getString(R.string.source_pref), new ArraySet<String>());
                     for (Iterator<String> iterator = prefs.iterator(); iterator.hasNext();){
                         Source s = gson.fromJson(iterator.next(), Source.class);
                         if (s.getId().equals(getItem(position).getId())) {
@@ -71,9 +71,9 @@ public class SourceAdapter extends ArrayAdapter<Source> {
                     getItem(position).setSelected(false);
                     SharedPreferences sharedPref = getContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.remove("source");
+                    editor.remove(getContext().getResources().getString(R.string.source_pref));
                     editor.commit();
-                    editor.putStringSet("source", prefs);
+                    editor.putStringSet(getContext().getResources().getString(R.string.source_pref), prefs);
                     editor.commit();
                     remove(getItem(position));
                     notifyDataSetChanged();

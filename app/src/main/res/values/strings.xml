@@ -14,13 +14,14 @@
 
     <string name="no_internet_connection">No internet connection.</string>
 
-    <string name="my_source"></string>
-
     <string name="order_by_top">Top</string>
     <string name="order_by_popular">Popular</string>
     <string name="order_by_latest">Latest</string>
-    <string name="location_not_enabled">Location is not enabled</string>
+    <string name="location_not_enabled">Location is not enabled.</string>
     <string name="open_location_settings">Open location settings</string>
     <string name="Cancel">Cancel</string>
+
+    <string name="location_pref">location</string>
+    <string name="source_pref">location</string>
 
 </resources>

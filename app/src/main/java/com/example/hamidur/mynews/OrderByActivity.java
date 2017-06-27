@@ -38,7 +38,7 @@ public class OrderByActivity extends AppCompatActivity {
         ListView orderViewList = (ListView) findViewById(R.id.order_by_list);
         List<Source> options = new ArrayList<>();
 
-        for(String s : getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>())){
+        for(String s : getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>())){
             Source source = gson.fromJson(s, Source.class);
             options.add(source);
         }
@@ -59,7 +59,7 @@ public class OrderByActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-                final Set<String> prefs = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>());
+                final Set<String> prefs = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>());
                 for(final String s : prefs){
                    final Source source = gson.fromJson(s, Source.class);
                     if(source.getId().equals(((Source) parent.getItemAtPosition(position)).getId())){
@@ -78,7 +78,7 @@ public class OrderByActivity extends AppCompatActivity {
                                         prefs.remove(s);
                                         prefs.add(gson.toJson(source));
                                         editor.clear();
-                                        editor.putStringSet("source", prefs);
+                                        editor.putStringSet(getResources().getString(R.string.source_pref), prefs);
                                         editor.commit();
                                     }
                                 });

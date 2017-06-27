@@ -200,7 +200,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private class WeatherAdapter extends  RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
-
         private List<Weather> allForcast;
         private Context context;
         public WeatherAdapter(Context context, List<Weather> weathers) {
@@ -226,7 +225,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             Glide.with(WeatherActivity.this).load(IMG_URL +weather.getImgUrl()).into(holder.forcastIcon);
             holder.forcastTemps.setText(weather.getMinTemp() + "\u00B0" + " - " + weather.getMaxTemp()+ "\u00B0");
         }
-
 
         @Override
         public int getItemCount() {

@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.remove("source");
+                        editor.remove(getResources().getString(R.string.source_pref));
                         editor.clear();
                         editor.commit();
                     }

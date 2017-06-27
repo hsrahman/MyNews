@@ -23,7 +23,7 @@ public class NewsActivity extends AppCompatActivity {
 
         List<String> sources = new ArrayList<String>();
 
-        for(String s : getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet("source", new ArraySet<String>())){
+        for(String s : getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>())){
             sources.add(s);
         }
 
