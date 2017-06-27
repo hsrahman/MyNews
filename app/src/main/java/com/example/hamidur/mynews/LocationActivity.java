@@ -3,6 +3,7 @@ package com.example.hamidur.mynews;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Random;
 
 public class LocationActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks<List<Location>>{
 
@@ -54,6 +56,8 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
 
     private class LocationAdapter extends ArrayAdapter<Location> {
 
+        private int[] colors = { R.color.colorPrimary, R.color.colorAccent, R.color.selected_source, R.color.close_btn, R.color.menu_font_color };
+
         public LocationAdapter(Context context, List<Location> locations) {
             super(context, 0, locations);
         }
@@ -64,7 +68,7 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
             View listItemView = convertView;
             if (listItemView == null) {
                 listItemView = LayoutInflater.from(getContext()).inflate(
-                        R.layout.location_item, parent, false);
+                        R.layout.locations_item, parent, false);
             }
 
             Location location = getItem(position);
@@ -77,6 +81,10 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
 
             TextView countryCode = (TextView) listItemView.findViewById(R.id.location_country_code);
             countryCode.setText(location.getCountryCode());
+
+            Random r = new Random();
+            GradientDrawable circle = (GradientDrawable) countryCode.getBackground();
+            circle.setColor(colors[r.nextInt(colors.length)]);
 
             TextView latLong = (TextView) listItemView.findViewById(R.id.location_lat_lng);
             latLong.setText("Lat: " + location.getLat() + ", Lng: " + location.getLng());
