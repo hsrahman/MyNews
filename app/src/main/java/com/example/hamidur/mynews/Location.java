@@ -8,7 +8,7 @@ public class Location {
     private String countryCode, timeZoneId, asciiName;
     private double lat, lng;
 
-    public Location(double lng, double lat, String countryCode, String timeZoneId, String asciiName) {
+    public Location(double lat, double lng, String countryCode, String timeZoneId, String asciiName) {
         this.lng = lng;
         this.lat = lat;
         this.countryCode = countryCode;

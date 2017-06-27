@@ -43,8 +43,8 @@ public class QueryUtils {
             JSONArray articleArray = baseJsonResponse.getJSONArray("geonames");
             for (int i = 0; i < articleArray.length(); i++) {
                 String timeZoneId = articleArray.getJSONObject(i).getJSONObject("timezone").getString("timeZoneId");
-                double lat = articleArray.getJSONObject(i).getDouble("lat");
-                double lng = articleArray.getJSONObject(i).getDouble("lng");
+                double lat = Double.parseDouble(articleArray.getJSONObject(i).getString("lat"));
+                double lng = Double.parseDouble(articleArray.getJSONObject(i).getString("lng"));
                 String countryCode = articleArray.getJSONObject(i).getString("countryCode");
                 String asciiName = articleArray.getJSONObject(i).getString("asciiName");
 

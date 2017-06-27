@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dp">
+    android:padding="12dp">
 
     <TextView
         android:id="@+id/location_country_code"
@@ -34,6 +34,7 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textSize="16sp"
+            android:textColor="#ffffff"
             tools:text="Banstead"
             android:textStyle="bold"/>
 
@@ -46,6 +47,7 @@
             android:maxLines="1"
             android:textAllCaps="true"
             android:textSize="12sp"
+            android:textColor="#ffffff"
             tools:text="Lat: -0.5, Lng: 0.3" />
 
     </LinearLayout>
@@ -64,6 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textSize="16sp"
+            android:textColor="#ffffff"
             tools:text="Europe/London" />
 
     </LinearLayout>

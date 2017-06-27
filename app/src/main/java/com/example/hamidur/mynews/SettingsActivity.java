@@ -31,6 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
         List<String> settingsOption = new ArrayList<>();
         settingsOption.add("Change Sources");
         settingsOption.add("My Source");
+        settingsOption.add("Weather Settings");
         settingsOption.add("Clear All Sources");
 
 

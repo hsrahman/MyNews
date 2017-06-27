@@ -42,7 +42,10 @@
         <activity
             android:name=".AboutActivity"
             android:label="@string/about_activity" />
-        <activity android:name=".LocationActivity"></activity>
+        <activity
+            android:name=".LocationActivity"
+            android:label="@string/location_activity"
+            />
     </application>
 
 </manifest>
