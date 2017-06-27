@@ -29,6 +29,41 @@ public class QueryUtils {
 
     }
 
+    private static List<Location> extractLocationsFromJson (String locationJson) {
+        if(TextUtils.isEmpty(locationJson)) {
+            return null;
+        }
+
+        List<Location> locationList = new ArrayList<>();
+
+        try {
+
+            JSONObject baseJsonResponse = new JSONObject(locationJson);
+
+            JSONArray articleArray = baseJsonResponse.getJSONArray("geonames");
+            for (int i = 0; i < articleArray.length(); i++) {
+                String timeZoneId = articleArray.getJSONObject(i).getJSONObject("timezone").getString("timeZoneId");
+                double lat = articleArray.getJSONObject(i).getDouble("lat");
+                double lng = articleArray.getJSONObject(i).getDouble("lng");
+                String countryCode = articleArray.getJSONObject(i).getString("countryCode");
+                String asciiName = articleArray.getJSONObject(i).getString("asciiName");
+
+                Location l = new Location(lat, lng, countryCode, timeZoneId, asciiName);
+
+                locationList.add(l);
+            }
+
+        }catch (JSONException e) {
+            Log.e("QueryUtils", "Problem parsing the location JSON results", e);
+        }
+        return locationList;
+    }
+
+    public static List<Location> fetchLocationData(String requestUrl){
+        List<Location> locations = extractLocationsFromJson(getHttpResultString(requestUrl));
+        return locations;
+    }
+
     private static List<NewsArticle> extractNewsFromJson(String articleJson){
         if(TextUtils.isEmpty(articleJson))
             return null;
@@ -71,17 +106,7 @@ public class QueryUtils {
     }
 
     public static List<NewsArticle> fetchNewsArticleData(String requestUrl){
-        URL url = createUrl(requestUrl);
-
-        String jsonResponse = null;
-
-        try{
-            jsonResponse = createHttpRequest(url);
-        } catch (IOException e){
-            Log.e(LOG_TAG, "Problem making the HTTP request");
-        }
-
-        List<NewsArticle> newsArticles = extractNewsFromJson(jsonResponse);
+        List<NewsArticle> newsArticles = extractNewsFromJson(getHttpResultString(requestUrl));
         return newsArticles;
     }
 
@@ -114,14 +139,7 @@ public class QueryUtils {
     }
 
     public static List<Source> fetchSourceData(String requestUrl){
-        URL url =  createUrl(requestUrl);
-        String jsonResponse = null;
-        try {
-            jsonResponse = createHttpRequest(url);
-        } catch (IOException io) {
-            Log.e(LOG_TAG, "Problem making the HTTP request");
-        }
-        List<Source> sources = extractSourceFromJson(jsonResponse);
+        List<Source> sources = extractSourceFromJson(getHttpResultString(requestUrl));
         return sources;
     }
 
@@ -158,14 +176,7 @@ public class QueryUtils {
     }
 
     public static List<Weather> fetchWeatherData(String requestUrl){
-        URL url =  createUrl(requestUrl);
-        String jsonResponse = null;
-        try {
-            jsonResponse = createHttpRequest(url);
-        } catch (IOException io) {
-            Log.e(LOG_TAG, "Problem making the HTTP request");
-        }
-        List<Weather> weathers = extractWeatherFromJson(jsonResponse);
+        List<Weather> weathers = extractWeatherFromJson(getHttpResultString(requestUrl));
         return weathers;
     }
 
@@ -222,5 +233,18 @@ public class QueryUtils {
             } while (line != null);
         }
         return output.toString();
+    }
+
+    private static String getHttpResultString (String requestUrl) {
+        URL url = createUrl(requestUrl);
+
+        String jsonResponse = null;
+
+        try{
+            jsonResponse = createHttpRequest(url);
+        } catch (IOException e){
+            Log.e(LOG_TAG, "Problem making the HTTP request");
+        }
+        return jsonResponse;
     }
 }
