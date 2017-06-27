@@ -47,8 +47,9 @@ public class QueryUtils {
                 double lng = Double.parseDouble(articleArray.getJSONObject(i).getString("lng"));
                 String countryCode = articleArray.getJSONObject(i).getString("countryCode");
                 String asciiName = articleArray.getJSONObject(i).getString("asciiName");
+                String continentCode = articleArray.getJSONObject(i).getString("continentCode");
 
-                Location l = new Location(lat, lng, countryCode, timeZoneId, asciiName);
+                Location l = new Location(lat, lng, countryCode, timeZoneId, asciiName, continentCode);
 
                 locationList.add(l);
             }

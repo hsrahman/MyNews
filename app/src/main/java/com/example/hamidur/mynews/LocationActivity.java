@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Random;
 
 public class LocationActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks<List<Location>>{
 
@@ -67,7 +70,7 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
         uriBuilder.appendQueryParameter("lang", "en");
         uriBuilder.appendQueryParameter("username", "hsrahman");
         uriBuilder.appendQueryParameter("style", "full");
-        System.out.println(uriBuilder.toString());
+
         return new LocationLoader(this,uriBuilder.toString());
     }
 
@@ -123,10 +126,41 @@ public class LocationActivity extends AppCompatActivity  implements LoaderManage
             TextView countryCode = (TextView) listItemView.findViewById(R.id.location_country_code);
             countryCode.setText(location.getCountryCode());
 
+            GradientDrawable circle = (GradientDrawable) countryCode.getBackground();
+            circle.setColor(getContinentColour(location.getContinentCode()));
+
             TextView latLong = (TextView) listItemView.findViewById(R.id.location_lat_lng);
             latLong.setText("Lat: " + location.getLat() + ", Lng: " + location.getLng());
 
             return listItemView;
+        }
+
+        private int getContinentColour(String code){
+            int locationColorResourceId;
+
+            switch(code){
+                case "EU":
+                    locationColorResourceId = R.color.europe;
+                    break;
+                case "NA":
+                    locationColorResourceId = R.color.north_america;
+                    break;
+                case "SA":
+                    locationColorResourceId = R.color.south_america;
+                    break;
+                case "AS":
+                    locationColorResourceId = R.color.asia;
+                    break;
+                case "AF":
+                    locationColorResourceId = R.color.africa;
+                    break;
+                case "OC":
+                    locationColorResourceId = R.color.oceania;
+                    break;
+                default:
+                    locationColorResourceId = R.color.antarctica;
+            }
+            return ContextCompat.getColor(getContext(), locationColorResourceId);
         }
     }
 }

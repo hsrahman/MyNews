@@ -45,6 +45,8 @@
         <activity
             android:name=".LocationActivity"
             android:label="@string/location_activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
             />
     </application>
 

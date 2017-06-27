@@ -13,4 +13,13 @@
 
     <color name="weather_header_bck">#5bbff0</color>
 
+
+    <color name="europe">#ffeb0c</color>
+    <color name="asia">#0c10ff</color>
+    <color name="africa">#af3f16</color>
+    <color name="north_america">#f51a0e</color>
+    <color name="south_america">#1cb711</color>
+    <color name="oceania">#b25af1</color>
+    <color name="antarctica">#948f8f</color>
+
 </resources>

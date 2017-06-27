@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
         ImageView newsApi = (ImageView) findViewById(R.id.news_api);
         ImageView weatherApi = (ImageView) findViewById(R.id.weather_api);
         ImageView currencyApi = (ImageView) findViewById(R.id.currency);
+        ImageView geonamesApi = (ImageView) findViewById(R.id.geonames_api);
+        ImageView exchangerateApi = (ImageView) findViewById(R.id.exchangerate_api);
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,6 +113,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Uri newsUri = Uri.parse("https://developer.weatherunlocked.com/");
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
+                startActivity(websiteIntent);
+            }
+        });
+
+        geonamesApi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri newsUri = Uri.parse("http://www.geonames.org/");
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
+                startActivity(websiteIntent);
+            }
+        });
+
+        exchangerateApi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri newsUri = Uri.parse("https://www.exchangerate-api.com/");
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
                 startActivity(websiteIntent);
             }

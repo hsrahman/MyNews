@@ -5,15 +5,20 @@ package com.example.hamidur.mynews;
  */
 public class Location {
 
-    private String countryCode, timeZoneId, asciiName;
+    private String countryCode, timeZoneId, asciiName, continentCode;
     private double lat, lng;
 
-    public Location(double lat, double lng, String countryCode, String timeZoneId, String asciiName) {
+    public Location(double lat, double lng, String countryCode, String timeZoneId, String asciiName, String continentCode) {
         this.lng = lng;
         this.lat = lat;
         this.countryCode = countryCode;
         this.timeZoneId = timeZoneId;
         this.asciiName = asciiName;
+        this.continentCode = continentCode;
+    }
+
+    public String getContinentCode() {
+        return continentCode;
     }
 
     public String getCountryCode() {
