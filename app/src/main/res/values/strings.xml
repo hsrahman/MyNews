@@ -6,6 +6,7 @@
     <string name="my_weather">My Weather</string>
     <string name="about_activity">About Us</string>
     <string name="location_activity">My Location</string>
+    <string name="weather_settings_activity">My Weather Settings</string>
 
     <string name="setting_name">Settings</string>
 
