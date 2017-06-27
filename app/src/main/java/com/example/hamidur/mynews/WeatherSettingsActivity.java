@@ -52,6 +52,15 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setDefaultLocation ();
+    }
+
+    private void setDefaultLocation () {
         Gson gson = new Gson();
         String locStrObj = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
         if (!locStrObj.equals("")) {
@@ -66,6 +75,5 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             TextView timeZone = (TextView) findViewById(R.id.location_timezone);
             timeZone.setText(myLoc.getTimeZoneId());
         }
-
     }
 }

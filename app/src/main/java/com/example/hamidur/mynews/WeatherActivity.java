@@ -53,24 +53,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        int locationMode = 0;
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        try {
-            locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
-        } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
-        }
+        loadWeatherData ();
 
-        if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-            startActivity(new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
-        } else {
-            if (!checkPermission()) {
-                requestPermission();
-            } else {
-                loadWeatherData ();
-            }
-        }
     }
 
     private void loadWeatherData () {
@@ -83,9 +68,27 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             location = new Location(myLocation.getAsciiName());
             location.setLatitude(myLocation.getLat());
             location.setLongitude(myLocation.getLng());
+            setLocationHeaderInformation(null, myLocation);
+            done = true;
         }else {
-            while (!done) {
-                done = setLocationInformation();
+            int locationMode = 0;
+            try {
+                locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+                startActivity(new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
+            } else {
+                if (!checkPermission()) {
+                    requestPermission();
+                } else {
+                    while (!done) {
+                        done = setLocationInformation();
+                    }
+                }
             }
         }
         if(done) {
@@ -180,10 +183,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             if (location != null) {
                 List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (!addresses.isEmpty()) {
-                    TextView countryCode = (TextView) findViewById(R.id.weather_country);
-                    countryCode.setText(addresses.get(0).getCountryCode());
-                    TextView city = (TextView) findViewById(R.id.weather_city);
-                    city.setText(addresses.get(0).getLocality());
+                    setLocationHeaderInformation(addresses, null);
                     return true;
                 }
             }
@@ -206,6 +206,18 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                     Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();
                 }
                 break;
+        }
+    }
+
+    private void setLocationHeaderInformation (List<Address> addresses, com.example.hamidur.mynews.Location location) {
+        TextView countryCode = (TextView) findViewById(R.id.weather_country);
+        TextView city = (TextView) findViewById(R.id.weather_city);
+        if (addresses != null && location == null) {
+            countryCode.setText(addresses.get(0).getCountryCode());
+            city.setText(addresses.get(0).getLocality());
+        } else {
+            countryCode.setText(location.getCountryCode());
+            city.setText(location.getAsciiName());
         }
     }
 
