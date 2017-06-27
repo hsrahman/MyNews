@@ -50,22 +50,24 @@ public class SettingsActivity extends AppCompatActivity {
     public void openIntentByOption (String option) {
         switch (option) {
             case "Change Sources" :
-                Intent sourceActivity = new Intent(SettingsActivity.this, SourceActivity.class);
-                startActivity(sourceActivity);
+                moveToActivity(SourceActivity.class);
                 break;
             case "My Source" :
-                Intent orderByActivity = new Intent(SettingsActivity.this, OrderByActivity.class);
-                startActivity(orderByActivity);
+                moveToActivity(OrderByActivity.class);
                 break;
             case "Weather Settings" :
-                Intent locationActivity = new Intent(SettingsActivity.this, LocationActivity.class);
-                startActivity(locationActivity);
+                moveToActivity(LocationActivity.class);
                 break;
             case "Clear All Sources" :
                 createPrefDialouge();
                 break;
 
         }
+    }
+
+    private void moveToActivity(Class<?> cls){
+        Intent activtyToGoTo = new Intent(SettingsActivity.this, cls);
+        startActivity(activtyToGoTo);
     }
 
     private void createPrefDialouge () {
