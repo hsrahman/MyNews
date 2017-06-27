@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(locationMode == Settings.Secure.LOCATION_MODE_OFF) {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-                    builder1.setMessage(getResources().getString(R.string.network_not_enabled));
+                    builder1.setMessage(getResources().getString(R.string.location_not_enabled));
                     builder1.setCancelable(true);
                     builder1.setPositiveButton(
                             getResources().getString(R.string.open_location_settings),

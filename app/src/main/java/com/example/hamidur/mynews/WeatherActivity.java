@@ -74,29 +74,31 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             startActivity(myIntent);
             Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
         } else {
-            boolean done = false;
-            while(!done){
-                done = setLocationInformation();
-            }
-            if(done) {
-                ConnectivityManager connMgr = (ConnectivityManager)
-                        getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    LoaderManager loaderManager = getLoaderManager();
-
-                    loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
-                }
+            if (!checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                /*Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);*/
+                requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
+                Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
             } else {
-                if (!checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                    Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
+                boolean done = false;
+                while(!done){
+                    done = setLocationInformation();
+                }
+                if(done) {
+                    ConnectivityManager connMgr = (ConnectivityManager)
+                            getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        LoaderManager loaderManager = getLoaderManager();
+
+                        loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+                    }
                 }
             }
         }
