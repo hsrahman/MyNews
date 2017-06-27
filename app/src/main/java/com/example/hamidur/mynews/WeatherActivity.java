@@ -74,34 +74,33 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             startActivity(myIntent);
             Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
         } else {
-            boolean done = false;
-            while(!done){
-                done = setLocationInformation();
-            }
-            if(done) {
-                ConnectivityManager connMgr = (ConnectivityManager)
-                        getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    LoaderManager loaderManager = getLoaderManager();
-
-                    loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
-                }
+            if (!checkPermission()) {
+                requestPermission();
             } else {
-                if (!checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                    Toast.makeText(this, "Enable location permission!", Toast.LENGTH_LONG).show();
-                }
+                loadWetaherData ();
             }
         }
 
 
+    }
+
+    private void loadWetaherData () {
+        boolean done = false;
+        while(!done){
+            done = setLocationInformation();
+        }
+        if(done) {
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+            if (networkInfo != null && networkInfo.isConnected()) {
+                LoaderManager loaderManager = getLoaderManager();
+
+                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+            }
+        }
     }
 
     @Override
@@ -149,27 +148,26 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private boolean setLocationInformation () {
-        if (checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (checkPermission()) {
             return getLocationInformation();
         } else {
-            //requestPermission(android.Manifest.permission.ACCESS_FINE_LOCATION);
             return false;
         }
     }
 
-    private boolean checkPermission (String permission) {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), permission);
+    private boolean checkPermission () {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
         return (result == PackageManager.PERMISSION_GRANTED);
     }
 
-    private void requestPermission (String permission) {
+    private void requestPermission () {
         //This code requests permission once and in future manual location activation
         /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
             Toast.makeText(this, "GPS permission allows us to access your location, please allow in app settings for additional functionality", Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
         }*/
-        ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
     }
 
     private boolean getLocationInformation(){
@@ -187,8 +185,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                     city.setText(addresses.get(0).getLocality());
                     return true;
                 }
-            } else {
-                //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5000, 20, listener);
             }
         } catch (SecurityException s){
             System.out.println("SecurityException Permission denied");
@@ -203,8 +199,10 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         switch (requestCode) {
             case REQUEST_CODE :
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLocationInformation();
-                    Toast.makeText(this, "Permission allowed", Toast.LENGTH_LONG).show();
+                   loadWetaherData();
+                } else {
+                    finish();
+                    Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();
                 }
                 break;
         }
