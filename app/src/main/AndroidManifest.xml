@@ -46,8 +46,8 @@
             android:name=".LocationActivity"
             android:label="@string/location_activity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".WeatherSettingsActivity"></activity>
     </application>
 
 </manifest>
