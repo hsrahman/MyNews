@@ -37,6 +37,5 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         });
 
-
     }
 }
