@@ -14,14 +14,20 @@
     <string name="no_location">No locations found.</string>
 
     <string name="no_internet_connection">No internet connection.</string>
-
+    <!--Dialog strings -->
     <string name="order_by_top">Top</string>
     <string name="order_by_popular">Popular</string>
     <string name="order_by_latest">Latest</string>
-    <string name="location_not_enabled">Location is not enabled.</string>
-    <string name="open_location_settings">Open location settings</string>
+    <string name="remove_all_sources">"Do you want to remove all your currently selected sources?"</string>
+    <string name="need_location">Location is not enabled.</string>
+    <string name="need_wifi">Wifi is not enabled.</string>
     <string name="Cancel">Cancel</string>
+    <string name="enable_wifi">Enable Wifi</string>
+    <string name="enable_location">Enable Location</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
+    <!--Shared prefs strings -->
     <string name="location_pref">location</string>
     <string name="source_pref">source</string>
     <string name="location_switch_pref">location_enable</string>

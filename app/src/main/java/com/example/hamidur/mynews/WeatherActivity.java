@@ -2,6 +2,7 @@ package com.example.hamidur.mynews;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -67,9 +69,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     protected void onStart() {
+        super.onStart();
         getLoaderManager().destroyLoader(WEATHER_LOADER_ID);
         loadWeatherData ();
-        super.onStart();
     }
 
     private void loadWeatherData () {
@@ -93,8 +95,27 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             }
 
             if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-                startActivity(new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                Toast.makeText(this, "Enable location to access the weather information" ,Toast.LENGTH_SHORT).show();
+
+                AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_location), false);
+
+                dialog.setPositiveButton(
+                        getResources().getString(R.string.enable_location),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startActivity( new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    });
+
+                dialog.setNegativeButton(
+                    getResources().getString(R.string.Cancel),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                            dialog.cancel();
+                        }
+                    });
+
+                dialog.show();
             } else {
                 if (!checkPermission()) {
                     requestPermission();
@@ -116,8 +137,26 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
                 loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
             } else {
-                startActivity(new Intent( Settings.ACTION_WIFI_SETTINGS));
-                Toast.makeText(this, "Wifi needs to be enabled to see the weather", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_wifi), false);
+
+                dialog.setPositiveButton(
+                        getResources().getString(R.string.enable_wifi),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            }
+                        });
+
+                dialog.setNegativeButton(
+                        getResources().getString(R.string.Cancel),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                finish();
+                                dialog.cancel();
+                            }
+                        });
+
+                dialog.show();
             }
         }
     }
@@ -154,6 +193,13 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         RecyclerView forcastView = (RecyclerView) findViewById(R.id.weather_forcast_list);
         forcastView.setLayoutManager(layoutManager);
         forcastView.setAdapter(forcastAdapter);
+    }
+
+    private AlertDialog.Builder createDialog (String msg, boolean cancelable) {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(WeatherActivity.this);
+        builder1.setMessage(msg);
+        builder1.setCancelable(cancelable);
+        return builder1;
     }
 
     @Override

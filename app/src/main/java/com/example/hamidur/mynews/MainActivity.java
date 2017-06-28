@@ -51,51 +51,7 @@ public class MainActivity extends AppCompatActivity {
         weather.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isLocationUsed = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true);
-                String storedLocation = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
-                if (!isLocationUsed && !storedLocation.equals("")) {
-                    Intent newsActivity = new Intent(MainActivity.this, WeatherActivity.class);
-                    startActivity(newsActivity);
-                } else {
-
-                    int locationMode = 0;
-
-                    try {
-                        locationMode = Settings.Secure.getInt(getApplicationContext().getContentResolver(), Settings.Secure.LOCATION_MODE);
-                    } catch (Settings.SettingNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-                        AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-                        builder1.setMessage(getResources().getString(R.string.location_not_enabled));
-                        builder1.setCancelable(true);
-                        builder1.setPositiveButton(
-                                getResources().getString(R.string.open_location_settings),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                        startActivity(myIntent);
-                                    }
-                                });
-
-                        builder1.setNegativeButton(
-                                getResources().getString(R.string.Cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(getApplicationContext(), "To use weather feature you must enable location settings", Toast.LENGTH_SHORT).show();
-                                        dialog.cancel();
-                                    }
-                                });
-
-                        builder1.create().show();
-
-                    } else {
-                        Intent newsActivity = new Intent(MainActivity.this, WeatherActivity.class);
-                        startActivity(newsActivity);
-                    }
-
-                }
+                startActivity(new Intent(MainActivity.this, WeatherActivity.class));
             }
         });
 

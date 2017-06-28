@@ -73,10 +73,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void createPrefDialouge () {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(SettingsActivity.this);
-        builder1.setMessage("Do you want to remove all your currently selected sources?");
+        builder1.setMessage(getResources().getString(R.string.remove_all_sources));
         builder1.setCancelable(true);
         builder1.setPositiveButton(
-                "Yes",
+                getResources().getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
@@ -88,7 +88,7 @@ public class SettingsActivity extends AppCompatActivity {
                 });
 
         builder1.setNegativeButton(
-                "No",
+                getResources().getString(R.string.no),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
