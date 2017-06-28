@@ -54,8 +54,22 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        loadWeatherData ();
 
+        ImageView settings = (ImageView) findViewById(R.id.weather_settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(WeatherActivity.this, WeatherSettingsActivity.class));
+            }
+        });
+
+    }
+
+    @Override
+    protected void onStart() {
+        getLoaderManager().destroyLoader(WEATHER_LOADER_ID);
+        loadWeatherData ();
+        super.onStart();
     }
 
     private void loadWeatherData () {
@@ -103,6 +117,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
             } else {
                 startActivity(new Intent( Settings.ACTION_WIFI_SETTINGS));
+                Toast.makeText(this, "Wifi needs to be enabled to see the weather", Toast.LENGTH_LONG).show();
             }
         }
     }
