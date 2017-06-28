@@ -75,38 +75,79 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private void loadWeatherData () {
-        boolean done = false;
-        boolean isLocationUsed = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true);
-        String storedLocation = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
-        if (!isLocationUsed && !storedLocation.equals("")) {
-            Gson gson = new Gson();
-            com.example.hamidur.mynews.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.Location.class);
-            location = new Location(myLocation.getAsciiName());
-            location.setLatitude(myLocation.getLat());
-            location.setLongitude(myLocation.getLng());
-            setLocationHeaderInformation(null, myLocation);
-            done = true;
-        }else {
-            int locationMode = 0;
-            try {
-                locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
-            } catch (Settings.SettingNotFoundException e) {
-                e.printStackTrace();
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            boolean done = false;
+            boolean isLocationUsed = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true);
+            String storedLocation = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
+            if (!isLocationUsed && !storedLocation.equals("")) {
+                Gson gson = new Gson();
+                com.example.hamidur.mynews.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.Location.class);
+                location = new Location(myLocation.getAsciiName());
+                location.setLatitude(myLocation.getLat());
+                location.setLongitude(myLocation.getLng());
+                setLocationHeaderInformation(null, myLocation);
+                done = true;
+            } else {
+                int locationMode = 0;
+                try {
+                    locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
+                } catch (Settings.SettingNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+
+                    AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_location), false);
+
+                    dialog.setPositiveButton(
+                            getResources().getString(R.string.enable_location),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            });
+
+                    dialog.setNegativeButton(
+                            getResources().getString(R.string.Cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    finish();
+                                    dialog.cancel();
+                                }
+                            });
+
+                    dialog.show();
+                } else {
+                    if (!checkPermission()) {
+                        requestPermission();
+                    } else {
+                        while (!done) {
+                            done = setLocationInformation();
+                        }
+                    }
+                }
             }
+            if (done) {
+                LoaderManager loaderManager = getLoaderManager();
 
-            if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
+                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+            }
+        } else {
+            AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_wifi), false);
 
-                AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_location), false);
-
-                dialog.setPositiveButton(
-                        getResources().getString(R.string.enable_location),
+            dialog.setPositiveButton(
+                    getResources().getString(R.string.enable_wifi),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            startActivity( new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                         }
                     });
 
-                dialog.setNegativeButton(
+            dialog.setNegativeButton(
                     getResources().getString(R.string.Cancel),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -115,49 +156,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                         }
                     });
 
-                dialog.show();
-            } else {
-                if (!checkPermission()) {
-                    requestPermission();
-                } else {
-                    while (!done) {
-                        done = setLocationInformation();
-                    }
-                }
-            }
-        }
-        if(done) {
-            ConnectivityManager connMgr = (ConnectivityManager)
-                    getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-            if (networkInfo != null && networkInfo.isConnected()) {
-                LoaderManager loaderManager = getLoaderManager();
-
-                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
-            } else {
-                AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_wifi), false);
-
-                dialog.setPositiveButton(
-                        getResources().getString(R.string.enable_wifi),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                            }
-                        });
-
-                dialog.setNegativeButton(
-                        getResources().getString(R.string.Cancel),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                                dialog.cancel();
-                            }
-                        });
-
-                dialog.show();
-            }
+            dialog.show();
         }
     }
 
@@ -274,9 +273,15 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         TextView countryCode = (TextView) findViewById(R.id.weather_country);
         TextView city = (TextView) findViewById(R.id.weather_city);
         if (addresses != null && location == null) {
+            if(addresses.get(0).getLocality().length() >= 25)
+                city.setTextSize(14);
+
             countryCode.setText(addresses.get(0).getCountryCode());
             city.setText(addresses.get(0).getLocality());
         } else {
+            if(location.getAsciiName().length() >= 25)
+                city.setTextSize(18);
+
             countryCode.setText(location.getCountryCode());
             city.setText(location.getAsciiName());
         }
