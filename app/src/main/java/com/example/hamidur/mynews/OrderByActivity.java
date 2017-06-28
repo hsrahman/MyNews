@@ -37,13 +37,18 @@ public class OrderByActivity extends AppCompatActivity {
 
         ListView orderViewList = (ListView) findViewById(R.id.order_by_list);
         List<Source> options = new ArrayList<>();
+        Set<String> prefSource = getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>());
 
-        for(String s : getSharedPreferences("my_sources", Context.MODE_PRIVATE).getStringSet(getResources().getString(R.string.source_pref), new ArraySet<String>())){
+        //((TextView) findViewById(R.id.empty_view)).setText(R.string.no_sources_selected);
+
+        for(String s : prefSource){
             Source source = gson.fromJson(s, Source.class);
             options.add(source);
         }
 
         mAdapter = new SourceAdapter(this, options);
+
+        orderViewList.setEmptyView(findViewById(R.id.empty_view));
 
         orderViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

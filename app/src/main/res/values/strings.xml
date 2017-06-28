@@ -10,10 +10,12 @@
 
     <string name="setting_name">Settings</string>
 
+    <string name="no_sources_selected">No sources selected.</string>
     <string name="no_news">No news found.</string>
     <string name="no_location">No locations found.</string>
 
     <string name="no_internet_connection">No internet connection.</string>
+
     <!--Dialog strings -->
     <string name="order_by_top">Top</string>
     <string name="order_by_popular">Popular</string>
@@ -21,9 +23,11 @@
     <string name="remove_all_sources">"Do you want to remove all your currently selected sources?"</string>
     <string name="need_location">Location is not enabled.</string>
     <string name="need_wifi">Wifi is not enabled.</string>
+    <string name="need_default_loc">A default location has to be set to use without network GPS.</string>
     <string name="Cancel">Cancel</string>
     <string name="enable_wifi">Enable Wifi</string>
     <string name="enable_location">Enable Location</string>
+    <string name="enable_default_location">Set Default Location</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
