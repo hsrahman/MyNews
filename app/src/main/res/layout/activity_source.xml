@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textSize="25sp"
+        android:visibility="gone"
         />
 
     <ListView
@@ -18,6 +19,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/categories" />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textAppearance="?android:textAppearanceMedium" />
 
     <ProgressBar
         android:id="@+id/source_loading_indicator"

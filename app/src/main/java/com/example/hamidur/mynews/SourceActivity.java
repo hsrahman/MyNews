@@ -44,6 +44,10 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     private static final int MAX_SELECTABLE = 3;
 
+    TextView emptyView;
+    View loadingIndicator;
+    Spinner spinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +58,9 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
         mAdapter = new SourceAdapter(this, new ArrayList<Source>());
         sourceListView.setAdapter(mAdapter);
-
+        emptyView = (TextView) findViewById(R.id.empty_view);
+        loadingIndicator = findViewById(R.id.source_loading_indicator);
+        spinner = (Spinner) findViewById(R.id.categories);
         sourceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -113,6 +119,9 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             LoaderManager loaderManager = getLoaderManager();
 
             loaderManager.initLoader(SOURCE_LOADER_ID, null, this);
+        } else {
+            loadingIndicator.setVisibility(View.GONE);
+            emptyView.setText(getResources().getString(R.string.no_internet_connection));
         }
     }
 
@@ -122,7 +131,6 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onLoadFinished(Loader<List<Source>> loader, List<Source> sources) {
-        View loadingIndicator = findViewById(R.id.source_loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
         for(int i = 0; i < sources.size(); i++){
@@ -142,9 +150,8 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
         }
 
-        Spinner spinner = (Spinner) findViewById(R.id.categories);
         SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this, new ArrayList<>(categoryToSource.keySet()));
-
+        spinner.setVisibility(View.VISIBLE);
         spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(this);
 
