@@ -44,7 +44,7 @@
                     android:id="@+id/pic1"
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/profile_icon" />
+                    android:src="@drawable/hamidur_prof" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                         android:textSize="22sp"
                         android:textStyle="bold|italic"
                         android:textColor="#ffffff"
-                        android:text="Hamidur Rahman" />
+                        android:text="@string/hamidur_name" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
                         android:textSize="15sp"
                         android:textStyle="italic"
                         android:textColor="#ffffff"
-                        android:text="Education: BSc Computer Science" />
+                        android:text="@string/hamidur_eduction" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -79,7 +79,7 @@
                         android:textSize="15sp"
                         android:textStyle="italic"
                         android:textColor="#ffffff"
-                        android:text="Interests: Mobile apps &amp; web development" />
+                        android:text="@string/hamidur_interest" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -90,7 +90,7 @@
                 android:layout_margin="5dp"
                 android:layout_below="@+id/profile1"
                 android:textColor="#ffffff"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In tristique ligula purus, eu semper felis sodales vel.Maecenas sem magna, suscipit ut venenatis nec, laoreet sit amet felis" />
+                android:text="@string/hamidur_description" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
@@ -125,7 +125,7 @@
                     android:id="@+id/pic2"
                     android:layout_width="100dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/profile_icon"
+                    android:src="@drawable/naziur_prof"
                     />
 
                 <LinearLayout
@@ -142,7 +142,7 @@
                         android:textSize="22sp"
                         android:textStyle="bold|italic"
                         android:textColor="#ffffff"
-                        android:text="Naziur Rahman" />
+                        android:text="@string/naziur_name" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -152,7 +152,7 @@
                         android:textSize="15sp"
                         android:textStyle="italic"
                         android:textColor="#ffffff"
-                        android:text="Education: BSc Computer Science" />
+                        android:text="@string/naziur_eduction" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -161,7 +161,7 @@
                         android:textSize="15sp"
                         android:textStyle="italic"
                         android:textColor="#ffffff"
-                        android:text="Interests: Mobile apps &amp; web development" />
+                        android:text="@string/naziur_interest" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -172,7 +172,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_below="@+id/profile2"
                 android:textColor="#ffffff"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In tristique ligula purus, eu semper felis sodales vel.Maecenas sem magna, suscipit ut venenatis nec, laoreet sit amet felis" />
+                android:text="@string/naziur_description" />
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>

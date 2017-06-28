@@ -36,4 +36,14 @@
     <string name="source_pref">source</string>
     <string name="location_switch_pref">location_enable</string>
 
+    <string name="naziur_name">Naziur Rahman</string>
+    <string name="naziur_eduction">Education: BSc Computer Science</string>
+    <string name="naziur_interest">Interests: Mobile apps &amp; web development</string>
+    <string name="naziur_description">I am an application developer and a co-developer of the My News android application. My key contribution to the application involves designing the layouts and writing the logic for managing the connections with the various open-source APIs.</string>
+
+    <string name="hamidur_name">Hamidur Rahman</string>
+    <string name="hamidur_eduction">Education: BSc Computer Science</string>
+    <string name="hamidur_interest">Interests: Mobile apps &amp; web development</string>
+    <string name="hamidur_description">TO DO::</string>
+
 </resources>
