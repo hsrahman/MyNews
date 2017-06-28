@@ -83,14 +83,38 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             boolean done = false;
             boolean isLocationUsed = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true);
             String storedLocation = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
-            if (!isLocationUsed && !storedLocation.equals("")) {
-                Gson gson = new Gson();
-                com.example.hamidur.mynews.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.Location.class);
-                location = new Location(myLocation.getAsciiName());
-                location.setLatitude(myLocation.getLat());
-                location.setLongitude(myLocation.getLng());
-                setLocationHeaderInformation(null, myLocation);
-                done = true;
+            if (!isLocationUsed) {
+                if (!storedLocation.equals("")) {
+                    Gson gson = new Gson();
+                    com.example.hamidur.mynews.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.Location.class);
+                    location = new Location(myLocation.getAsciiName());
+                    location.setLatitude(myLocation.getLat());
+                    location.setLongitude(myLocation.getLng());
+                    setLocationHeaderInformation(null, myLocation);
+                    done = true;
+                } else {
+                    AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_default_loc), false);
+
+                    dialog.setPositiveButton(
+                            getResources().getString(R.string.enable_default_location),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(new Intent(WeatherActivity.this, LocationActivity.class));
+                                }
+                            });
+
+                    dialog.setNegativeButton(
+                            getResources().getString(R.string.Cancel),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    finish();
+                                    dialog.cancel();
+                                }
+                            });
+
+                    dialog.show();
+                }
+
             } else {
                 int locationMode = 0;
                 try {

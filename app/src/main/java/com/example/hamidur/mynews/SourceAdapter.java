@@ -67,7 +67,6 @@ public class SourceAdapter extends ArrayAdapter<Source> {
                             break;
                         }
                     }
-
                     getItem(position).setSelected(false);
                     SharedPreferences sharedPref = getContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
@@ -76,6 +75,7 @@ public class SourceAdapter extends ArrayAdapter<Source> {
                     editor.putStringSet(getContext().getResources().getString(R.string.source_pref), prefs);
                     editor.commit();
                     remove(getItem(position));
+
                     notifyDataSetChanged();
                 }
             });
