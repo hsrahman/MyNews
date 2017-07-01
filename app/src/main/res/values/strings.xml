@@ -39,7 +39,7 @@
     <string name="naziur_name">Naziur Rahman</string>
     <string name="naziur_eduction">Education: BSc (Hons) Computer Science</string>
     <string name="naziur_interest">Interests: Android apps &amp; web development</string>
-    <string name="naziur_description">I am an application developer and a co-developer of the MyNews android application. My key contribution to the application involves designing the layouts and writing the logic for managing the connections with the various open-source APIs.</string>
+    <string name="naziur_description">I am the co-developer of the MyNews android application. My key contribution to the application involves designing layouts and writing logic for managing connections with the various open-source APIs.</string>
 
     <string name="hamidur_name">Hamidur Rahman</string>
     <string name="hamidur_eduction">Education: BSc (Hons) Computer Science</string>

@@ -84,7 +84,7 @@ public class Source {
 
     public int getIconId() { return iconId; }
 
-    private void setIconId () {
+    public void setIconId () {
         switch (category) {
             case "science-and-nature" :
                 iconId = R.drawable.ic_nature;

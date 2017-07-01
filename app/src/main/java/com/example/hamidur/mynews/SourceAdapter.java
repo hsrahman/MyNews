@@ -49,6 +49,7 @@ public class SourceAdapter extends ArrayAdapter<Source> {
         country.setText("Country: " + source.getCountry().toUpperCase());
 
         ImageView icon = (ImageView) listItemView.findViewById(R.id.source_icon);
+        source.setIconId();
         icon.setImageResource(source.getIconId());
 
         if(getContext().getClass() == OrderByActivity.class){
