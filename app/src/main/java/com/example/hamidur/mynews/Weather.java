@@ -11,16 +11,16 @@ public class Weather {
 
     private String day, date, description, imgUrl;
 
-    private int minTemp, maxTemp, temp;
+    private int minTemp, maxTemp, temp, descriptionCode;
 
-    public Weather(String date, double minTemp, double maxTemp, double temp, String description, String imgUrl) {
+    public Weather(String date, double minTemp, double maxTemp, double temp, String description, String imgUrl, int descriptionCode) {
         this.date = date;
         this.minTemp = removeDecimal(minTemp);
         this.maxTemp = removeDecimal(maxTemp);;
         this.description = description;
         this.imgUrl = imgUrl;
         this.temp = removeDecimal(temp);;
-
+        this.descriptionCode = descriptionCode;
         SimpleDateFormat inFormat = new SimpleDateFormat("dd/MM/yyyy");
         try{
             Date dateAsDate = inFormat.parse(date);
@@ -31,6 +31,8 @@ public class Weather {
         }
 
     }
+
+    public int getDescriptionCode() {return descriptionCode;}
 
     private int removeDecimal (double value) {
         return (int) Math.round(value);

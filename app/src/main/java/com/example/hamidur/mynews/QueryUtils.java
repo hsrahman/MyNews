@@ -162,10 +162,11 @@ public class QueryUtils {
                 JSONArray timeFrame = currentDay.getJSONArray("Timeframes");
                 JSONObject currentTimeFrame = timeFrame.getJSONObject(0);
                 String description = currentTimeFrame.getString("wx_desc");
+                int descriptionCode = currentTimeFrame.getInt("wx_code");
                 String imgUrl = currentTimeFrame.getString("wx_icon");
                 double currentTemp = currentTimeFrame.getDouble("temp_c");
 
-                weatherList.add(new Weather(date, minTemp, maxTemp, currentTemp, description, imgUrl));
+                weatherList.add(new Weather(date, minTemp, maxTemp, currentTemp, description, imgUrl, descriptionCode));
             }
 
         } catch (JSONException e) {

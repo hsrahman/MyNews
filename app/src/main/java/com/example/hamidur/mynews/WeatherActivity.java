@@ -228,6 +228,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public Loader<List<Weather>> onCreateLoader(int id, Bundle args) {
         Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/" + location.getLatitude() + "," + location.getLongitude() + "/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
+        System.out.println(baseUri.toString());
         return new WeatherLoader(this, baseUri.toString());
     }
 
