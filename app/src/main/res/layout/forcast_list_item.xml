@@ -27,7 +27,6 @@
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/clear"
             android:layout_weight="0.4"
             android:id="@+id/forcast_icon"/>
 

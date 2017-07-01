@@ -74,7 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.9"
-        android:background="@drawable/weather_bck_snw_clr">
+        android:id="@+id/current_weather_bck"
+        >
 
         <ProgressBar
             android:id="@+id/loading_indicator"
@@ -138,7 +139,7 @@
             android:layout_height="60dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            tools:src="@drawable/clear" />
+             />
 
         <LinearLayout
             android:id="@+id/weather_forcast"

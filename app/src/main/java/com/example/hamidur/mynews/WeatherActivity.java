@@ -17,6 +17,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -187,6 +189,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<List<Weather>> loader, List<Weather> data) {
 
+        RelativeLayout weatherBck = (RelativeLayout) findViewById(R.id.current_weather_bck);
+        weatherBck.setBackground(ResourcesCompat.getDrawable(getResources(), setWeatherBack(data.get(0).getDescriptionCode()), null));
         // setting current weather from first item in the list
         TextView date = (TextView) findViewById(R.id.weather_date);
         date.setText(data.get(0).getDate());
@@ -308,6 +312,32 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
             countryCode.setText(location.getCountryCode());
             city.setText(location.getAsciiName());
+        }
+    }
+
+    private int setWeatherBack (int weatherCode) {
+        switch (weatherCode) {
+            // sunny
+            case  0 :
+                return R.drawable.weather_bck_sunny_clr;
+            // cloudy
+            case 1 : case 2 : case 3 : case 21 : case 22 : case 23 : case 24 : case 29 :
+                return R.drawable.weather_bck_cloudy;
+            // rain
+            case 50 : case 51 : case 56 : case 57 : case 60 :  case 61 :  case 62 :  case 63 :  case 64 :  case 65 :  case 66 :  case 67 :
+            case 80 :   case 81 :   case 82 :
+                return R.drawable.weather_bck_rain;
+            // snow/sleet
+            case 38 : case 39 : case 68 : case 69 : case 70 :  case 71 :  case 72 :  case 73 :  case 75 :  case 79 : case 83 :
+            case 84 :  case 85 :  case 86 :  case 87 :  case 88 :
+                return R.drawable.weather_bck_snw_clr;
+            // mist/fog
+            case 45 : case 49 :
+                return R.drawable.weather_bck_mist;
+            // storm
+            case 91 : case 92 : case 93 : case 94 :
+                return R.drawable.weather_bck_storm;
+            default: return R.drawable.weather_bck_cloudy;
         }
     }
 
