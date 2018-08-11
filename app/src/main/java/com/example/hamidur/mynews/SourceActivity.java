@@ -22,6 +22,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hamidur.mynews.adapter.SourceAdapter;
+import com.example.hamidur.mynews.loader.SourceLoader;
+import com.example.hamidur.mynews.model.Source;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -32,11 +35,11 @@ import java.util.Set;
 
 public class SourceActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, LoaderManager.LoaderCallbacks<List<Source>> {
 
-    private static final String NEWSAPI_REQUEST_URL_SOURCE = " https://newsapi.org/v1/sources";
+    private static final String NEWSAPI_REQUEST_URL_SOURCE = " https://newsapi.org/v2/sources";
 
     private HashMap <String, List<Source>> categoryToSource;
 
-    private String selectedCategory = "science-and-nature";
+    private String selectedCategory = "science";
 
     private static final int SOURCE_LOADER_ID = 2;
 
@@ -158,7 +161,7 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
         mAdapter.clear();
 
         if (sources != null && !sources.isEmpty()) {
-            mAdapter.addAll(categoryToSource.get(selectedCategory));
+           // mAdapter.addAll(categoryToSource.get(selectedCategory));
         }
     }
 
@@ -232,17 +235,13 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
 
         private int setIconId (String category) {
             switch (category) {
-                case "science-and-nature":
+                case "science":
                     return R.drawable.ic_nature;
-                case "gaming":
-                    return R.drawable.ic_game;
-                case "music":
-                    return R.drawable.ic_music;
-                case "politics":
-                    return R.drawable.ic_politics;
+                case "health":
+                    return R.drawable.ic_health;
                 case "technology":
                     return R.drawable.ic_tech;
-                case "sport":
+                case "sports":
                     return R.drawable.ic_sport;
                 case "entertainment":
                     return R.drawable.ic_entertainment;

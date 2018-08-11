@@ -33,6 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.hamidur.mynews.loader.WeatherLoader;
+import com.example.hamidur.mynews.model.Weather;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -88,7 +90,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             if (!isLocationUsed) {
                 if (!storedLocation.equals("")) {
                     Gson gson = new Gson();
-                    com.example.hamidur.mynews.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.Location.class);
+                    com.example.hamidur.mynews.model.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.model.Location.class);
                     location = new Location(myLocation.getAsciiName());
                     location.setLatitude(myLocation.getLat());
                     location.setLongitude(myLocation.getLng());
@@ -232,7 +234,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public Loader<List<Weather>> onCreateLoader(int id, Bundle args) {
         Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/" + location.getLatitude() + "," + location.getLongitude() + "/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
-        System.out.println(baseUri.toString());
         return new WeatherLoader(this, baseUri.toString());
     }
 
@@ -298,7 +299,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         }
     }
 
-    private void setLocationHeaderInformation (List<Address> addresses, com.example.hamidur.mynews.Location location) {
+    private void setLocationHeaderInformation (List<Address> addresses, com.example.hamidur.mynews.model.Location location) {
         TextView countryCode = (TextView) findViewById(R.id.weather_country);
         TextView city = (TextView) findViewById(R.id.weather_city);
         if (addresses != null && location == null) {

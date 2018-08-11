@@ -13,6 +13,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hamidur.mynews.model.Location;
 import com.google.gson.Gson;
 
 public class WeatherSettingsActivity extends AppCompatActivity {

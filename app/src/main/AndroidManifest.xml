@@ -32,7 +32,7 @@
             android:name=".SettingsActivity"
             android:label="@string/settings_activity" />
         <activity
-            android:name=".OrderByActivity"
+            android:name=".MySourcesActivity"
             android:label="@string/order_activity" />
         <activity
             android:name=".WeatherActivity"
@@ -49,7 +49,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WeatherSettingsActivity"
-            android:label="@string/weather_settings_activity"/>
+            android:label="@string/weather_settings_activity" />
+        <activity android:name=".HeadlineActivity"></activity>
     </application>
 
 </manifest>

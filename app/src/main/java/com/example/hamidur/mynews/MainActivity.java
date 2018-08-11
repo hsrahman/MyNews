@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ImageView headline = (ImageView) findViewById(R.id.headline);
         ImageView news = (ImageView) findViewById(R.id.news);
         ImageView settings = (ImageView) findViewById(R.id.settings);
         ImageView weather = (ImageView) findViewById(R.id.weather);
@@ -32,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
         ImageView currencyApi = (ImageView) findViewById(R.id.currency);
         ImageView geonamesApi = (ImageView) findViewById(R.id.geonames_api);
         ImageView exchangerateApi = (ImageView) findViewById(R.id.exchangerate_api);
+        headline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent headlineActivity = new Intent(MainActivity.this, HeadlineActivity.class);
+                startActivity(headlineActivity);
+            }
+        });
+
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

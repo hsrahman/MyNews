@@ -54,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
                 moveToActivity(SourceActivity.class);
                 break;
             case "My Source" :
-                moveToActivity(OrderByActivity.class);
+                moveToActivity(MySourcesActivity.class);
                 break;
             case "Weather Settings" :
                 moveToActivity(WeatherSettingsActivity.class);

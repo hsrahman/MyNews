@@ -6,8 +6,9 @@ import android.support.v4.util.ArraySet;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
+
+import com.example.hamidur.mynews.fragment.SimpleFragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

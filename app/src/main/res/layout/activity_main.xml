@@ -17,6 +17,20 @@
             android:layout_marginBottom="5dp">
 
             <ImageView
+                android:id="@+id/headline"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/headline" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
                 android:id="@+id/news"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
