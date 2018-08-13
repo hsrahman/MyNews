@@ -1,9 +1,12 @@
 package com.example.hamidur.mynews;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -15,6 +18,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -23,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +36,20 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import com.bumptech.glide.Glide;
 import com.example.hamidur.mynews.loader.WeatherLoader;
@@ -41,7 +60,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>{
+public class WeatherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Weather>>, ConnectionCallbacks,
+        OnConnectionFailedListener,
+        LocationListener,
+        ResultCallback<LocationSettingsResult> {
 
     private static final String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
 
@@ -51,9 +73,33 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private static final int WEATHER_LOADER_ID = 3;
 
-    private Location location;
-
     private WeatherAdapter forcastAdapter;
+
+
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
+    protected final static String KEY_LOCATION = "location";
+    protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+
+    protected GoogleApiClient mGoogleApiClient;
+
+
+    protected LocationRequest mLocationRequest;
+
+
+    protected LocationSettingsRequest mLocationSettingsRequest;
+
+
+    protected Location mCurrentLocation;
+
+    protected Boolean mRequestingLocationUpdates;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +115,166 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
+        mRequestingLocationUpdates = false;
+
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
+
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                startLocationUpdates();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                try {
+                    status.startResolutionForResult(WeatherActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {}
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                break;
+        }
+    }
+
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient,
+                mLocationRequest,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                mRequestingLocationUpdates = true;
+            }
+        });
+
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                mRequestingLocationUpdates = false;
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        startLocationUpdates();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        break;
+                }
+                break;
+        }
+    }
+
+    private void getWeatherData(){
+        LoaderManager loaderManager = getLoaderManager();
+
+        loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        mGoogleApiClient.connect();
         getLoaderManager().destroyLoader(WEATHER_LOADER_ID);
         loadWeatherData ();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        mCurrentLocation = location;
+
+        if(getLocationInformation(mCurrentLocation)) {
+            LoaderManager loaderManager = getLoaderManager();
+
+            loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+        }
+    }
+
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+
     }
 
     private void loadWeatherData () {
@@ -91,9 +290,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 if (!storedLocation.equals("")) {
                     Gson gson = new Gson();
                     com.example.hamidur.mynews.model.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.model.Location.class);
-                    location = new Location(myLocation.getAsciiName());
-                    location.setLatitude(myLocation.getLat());
-                    location.setLongitude(myLocation.getLng());
+                    mCurrentLocation = new Location(myLocation.getAsciiName());
+                    mCurrentLocation.setLatitude(myLocation.getLat());
+                    mCurrentLocation.setLongitude(myLocation.getLng());
                     setLocationHeaderInformation(null, myLocation);
                     done = true;
                 } else {
@@ -120,12 +319,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 }
 
             } else {
-                int locationMode = 0;
+                checkLocationSettings();
+                /* int locationMode = 0;
                 try {
                     locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
                 } catch (Settings.SettingNotFoundException e) {
                     e.printStackTrace();
                 }
+
 
                 if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
 
@@ -158,6 +359,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                         }
                     }
                 }
+                */
+
             }
             if (done) {
                 LoaderManager loaderManager = getLoaderManager();
@@ -233,14 +436,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public Loader<List<Weather>> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/" + location.getLatitude() + "," + location.getLongitude() + "/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
+        Uri baseUri = Uri.parse("https://api.weatherunlocked.com/api/trigger/" + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude() + "/forecast%20tomorrow%20temperature%20gt%2016%20include7dayforecast?app_id=47c57285&app_key=4a3d79d727c3af86ede4b3dbc14f3555");
         return new WeatherLoader(this, baseUri.toString());
     }
 
     @Override
     public void onLoaderReset(Loader<List<Weather>> loader) {
     }
-
+    /*
     private boolean setLocationInformation () {
         if (checkPermission()) {
             return getLocationInformation();
@@ -248,6 +451,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             return false;
         }
     }
+    */
 
     private boolean checkPermission () {
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -264,14 +468,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
     }
 
-    private boolean getLocationInformation(){
+    private boolean getLocationInformation(Location location){
 
         try {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            mCurrentLocation = location;
             Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
-            if (location != null) {
-                List<Address> addresses = coder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (mCurrentLocation != null) {
+                List<Address> addresses = coder.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
                 if (!addresses.isEmpty()) {
                     setLocationHeaderInformation(addresses, null);
                     return true;
@@ -297,6 +501,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 }
                 break;
         }
+
     }
 
     private void setLocationHeaderInformation (List<Address> addresses, com.example.hamidur.mynews.model.Location location) {
@@ -341,6 +546,16 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 return R.drawable.weather_bck_storm;
             default: return R.drawable.weather_bck_cloudy;
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 
     private class WeatherAdapter extends  RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
