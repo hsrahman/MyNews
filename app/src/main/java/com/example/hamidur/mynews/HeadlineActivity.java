@@ -2,25 +2,38 @@ package com.example.hamidur.mynews;
 
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Loader;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hamidur.mynews.adapter.NewsAdapter;
 import com.example.hamidur.mynews.loader.NewsLoader;
 import com.example.hamidur.mynews.model.NewsArticle;
+import com.example.hamidur.mynews.utility.QueryUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +42,7 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
 
     private String defaultLang = "us";
     private String resultAmount = "25";
+    private String currentSelection = "United States";
 
     private boolean gps_enabled = false;
 
@@ -87,8 +101,50 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
                 getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, this);
                 break;
             case R.id.action_lang:
-                Toast.makeText(this, "Language settings selected", Toast.LENGTH_SHORT)
-                        .show();
+                AlertDialog.Builder spinnerDialogue = new AlertDialog.Builder(HeadlineActivity.this);
+                View v = getLayoutInflater().inflate(R.layout.country_spinner_dialogue, null);
+                spinnerDialogue.setTitle("Select Country");
+                final Spinner spinner = (Spinner) v.findViewById(R.id.country_spinner);
+
+                final ArrayAdapter<String> adapter = new ArrayAdapter<String>(HeadlineActivity.this,
+                        android.R.layout.simple_spinner_item,
+                        getResources().getStringArray(R.array.countries));
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(adapter);
+                spinner.setSelection(adapter.getPosition(currentSelection));
+                spinnerDialogue.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String item = spinner.getSelectedItem().toString();
+                        try {
+                            JSONArray isoList = new JSONArray(QueryUtils.readFromRawJsonFile(getResources(),R.raw.iso_json));
+                            for(int i = 0; i < isoList.length(); i++) {
+                                JSONObject currentCountry = isoList.getJSONObject(i);
+                                if (currentCountry.getString("Name").equals(item)) {
+                                    spinner.setSelection(adapter.getPosition(item));
+                                    currentSelection = item;
+                                    defaultLang = currentCountry.getString("Code").toLowerCase();
+                                    getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                                }
+                            }
+                        }catch (Exception ex) {
+                            System.out.println("Error reading ISO JSON File.");
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                spinnerDialogue.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                spinnerDialogue.setView(v);
+                AlertDialog alertDialog = spinnerDialogue.create();
+                alertDialog.show();
+
                 break;
             case R.id.action_loc:
                if (gps_enabled) {
@@ -140,4 +196,4 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
             }
         } catch (Exception ex) {}
     }
-}
+ }

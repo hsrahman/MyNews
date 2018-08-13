@@ -31,6 +31,16 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <!-- Country Codes -->
+    <string-array name="countries">
+        <item>United States</item>
+        <item>United Kingdom</item>
+        <item>Australia</item>
+        <item>Argentina</item>
+        <item>Brazil</item>
+        <item>Canada</item>
+    </string-array>
+
     <!--Shared prefs strings -->
     <string name="location_pref">location</string>
     <string name="source_pref">source</string>
