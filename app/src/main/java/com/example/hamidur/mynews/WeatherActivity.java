@@ -67,8 +67,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private static final String IMG_URL = "http://www.weatherunlocked.com/Images/icons/1/";
 
-    LocationManager locationManager;
-
     private static final int REQUEST_CODE = 1;
 
     private static final int WEATHER_LOADER_ID = 3;
@@ -83,29 +81,22 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
-    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
-    protected final static String KEY_LOCATION = "location";
-    protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+    protected final static String KEY_LOCATION = "LOCATION";
 
     protected GoogleApiClient mGoogleApiClient;
 
-
     protected LocationRequest mLocationRequest;
 
-
     protected LocationSettingsRequest mLocationSettingsRequest;
-
 
     protected Location mCurrentLocation;
 
     protected Boolean mRequestingLocationUpdates;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         ImageView settings = (ImageView) findViewById(R.id.weather_settings);
         settings.setOnClickListener(new View.OnClickListener() {
@@ -115,12 +106,49 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
+        final ImageView refreshLocation = (ImageView) findViewById(R.id.refresh_loc);
+        refreshLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isLocationUsed = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getBoolean(getResources().getString(R.string.location_switch_pref), true);
+                if (isLocationUsed && isLocationEnabled()) {
+                    refreshLocation.setEnabled(false);
+                    startLocationUpdates();
+                    refreshLocation.setEnabled(true);
+                } else {
+                    Toast.makeText(getApplicationContext(), "You must enable location for this feature" ,Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        updateValuesFromBundle(savedInstanceState);
         mRequestingLocationUpdates = false;
 
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
 
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState){
+        if (savedInstanceState != null) {
+            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
+                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+                getWeatherData();
+            }
+        }
+    }
+
+    private boolean isLocationEnabled(){
+        int locationMode = 0;
+        try {
+            locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return locationMode != Settings.Secure.LOCATION_MODE_OFF;
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -148,6 +176,12 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     protected void checkLocationSettings() {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+            return;
+        }
+
         PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(
                         mGoogleApiClient,
@@ -180,6 +214,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     protected void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -193,6 +228,20 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE :
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkLocationSettings();
+                } else {
+                    finish();
+                    Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 
     protected void stopLocationUpdates() {
@@ -210,7 +259,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            // Check for the integer request code originally supplied to startResolutionForResult().
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
@@ -224,6 +272,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     }
 
     private void getWeatherData(){
+        getLocationInformation();
         LoaderManager loaderManager = getLoaderManager();
 
         loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
@@ -264,11 +313,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
         mCurrentLocation = location;
 
-        if(getLocationInformation(mCurrentLocation)) {
-            LoaderManager loaderManager = getLoaderManager();
+        getWeatherData();
 
-            loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
-        }
+        stopLocationUpdates();
     }
 
 
@@ -320,47 +367,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
             } else {
                 checkLocationSettings();
-                /* int locationMode = 0;
-                try {
-                    locationMode = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
-                } catch (Settings.SettingNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-
-                if (locationMode == Settings.Secure.LOCATION_MODE_OFF) {
-
-                    AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_location), false);
-
-                    dialog.setPositiveButton(
-                            getResources().getString(R.string.enable_location),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                }
-                            });
-
-                    dialog.setNegativeButton(
-                            getResources().getString(R.string.Cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    finish();
-                                    dialog.cancel();
-                                }
-                            });
-
-                    dialog.show();
-                } else {
-                    if (!checkPermission()) {
-                        requestPermission();
-                    } else {
-                        while (!done) {
-                            done = setLocationInformation();
-                        }
-                    }
-                }
-                */
-
             }
             if (done) {
                 LoaderManager loaderManager = getLoaderManager();
@@ -443,35 +449,10 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoaderReset(Loader<List<Weather>> loader) {
     }
-    /*
-    private boolean setLocationInformation () {
-        if (checkPermission()) {
-            return getLocationInformation();
-        } else {
-            return false;
-        }
-    }
-    */
 
-    private boolean checkPermission () {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
-        return (result == PackageManager.PERMISSION_GRANTED);
-    }
-
-    private void requestPermission () {
-        //This code requests permission once and in future manual location activation
-        /*if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)){
-            Toast.makeText(this, "GPS permission allows us to access your location, please allow in app settings for additional functionality", Toast.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {permission}, REQUEST_CODE);
-        }*/
-        ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
-    }
-
-    private boolean getLocationInformation(Location location){
+    private boolean getLocationInformation(){
 
         try {
-            mCurrentLocation = location;
             Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
             if (mCurrentLocation != null) {
@@ -487,21 +468,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             System.out.println("IOException Permission denied");
         }
         return false;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE :
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    loadWeatherData();
-                } else {
-                    finish();
-                    Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();
-                }
-                break;
-        }
-
     }
 
     private void setLocationHeaderInformation (List<Address> addresses, com.example.hamidur.mynews.model.Location location) {
@@ -601,7 +567,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 forcastDay = (TextView) itemView.findViewById(R.id.forcast_day);
                 forcastIcon = (ImageView) itemView.findViewById(R.id.forcast_icon);
                 forcastTemps = (TextView) itemView.findViewById(R.id.forcast_min_max);
-
             }
         }
 
