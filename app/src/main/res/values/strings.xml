@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">My News</string>
+    <string name="headline_activity">Headline</string>
     <string name="settings_activity">Settings</string>
     <string name="all_source_activity">All Sources</string>
     <string name="order_activity">My Sources</string>
@@ -30,6 +31,16 @@
     <string name="enable_default_location">Set Default Location</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <!-- Country Codes -->
+    <string-array name="countries">
+        <item>United States</item>
+        <item>United Kingdom</item>
+        <item>Australia</item>
+        <item>Argentina</item>
+        <item>Brazil</item>
+        <item>Canada</item>
+    </string-array>
 
     <!--Shared prefs strings -->
     <string name="location_pref">location</string>

@@ -1,5 +1,6 @@
 package com.example.hamidur.mynews.utility;
 
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -221,6 +222,11 @@ public class QueryUtils {
             }
         }
         return jsonResponse;
+    }
+
+    public static String readFromRawJsonFile (final Resources resources, int resId) throws IOException{
+        InputStream resourceReader = resources.openRawResource(resId);
+        return readFromStream(resourceReader);
     }
 
     private static String readFromStream (InputStream inputStream) throws IOException{
