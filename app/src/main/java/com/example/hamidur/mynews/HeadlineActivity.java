@@ -1,15 +1,26 @@
 package com.example.hamidur.mynews;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.content.Loader;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,20 +42,34 @@ import com.example.hamidur.mynews.adapter.NewsAdapter;
 import com.example.hamidur.mynews.loader.NewsLoader;
 import com.example.hamidur.mynews.model.NewsArticle;
 import com.example.hamidur.mynews.utility.QueryUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class HeadlineActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<NewsArticle>>{
+public class HeadlineActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<NewsArticle>>, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener,
+        ResultCallback<LocationSettingsResult> {
 
     private String defaultLang = "us";
     private String resultAmount = "25";
     private String currentSelection = "United States";
-
-    private boolean gps_enabled = false;
 
     private NewsAdapter mAdapter;
 
@@ -57,6 +82,29 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
     private View loadingIndicator;
 
     private Menu actionMenu = null;
+
+    protected static final int REQUEST_SETTINGS_APP = 0x2;
+
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
+    protected final static String KEY_LOCATION = "location";
+    protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+
+    protected GoogleApiClient mGoogleApiClient;
+
+    protected LocationRequest mLocationRequest;
+
+    protected LocationSettingsRequest mLocationSettingsRequest;
+
+    protected Location mCurrentLocation;
+
+    protected Boolean mRequestingLocationUpdates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +127,49 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
             emptyStateTextView.setText("Failed to retrieve data");
         }
 
-        getSupportActionBar().setTitle("Headline");
+        mRequestingLocationUpdates = false;
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
+    }
 
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(HeadlineActivity.this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
+        loadingIndicator.setVisibility(View.VISIBLE);
+        toggleMenuButtons(false);
     }
 
     @Override
@@ -88,7 +177,8 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         MenuInflater inflater = getMenuInflater();
         actionMenu = menu;
         inflater.inflate(R.menu.menu, menu);
-        isLocationEnabled();
+        toggleMenuButtons(false);
+        if (isLocationEnabled()) checkLocationSettings();
         return true;
     }
 
@@ -99,6 +189,7 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
             case R.id.action_refresh:
                 loadingIndicator.setVisibility(View.VISIBLE);
                 getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, this);
+                toggleMenuButtons(false);
                 break;
             case R.id.action_lang:
                 AlertDialog.Builder spinnerDialogue = new AlertDialog.Builder(HeadlineActivity.this);
@@ -124,7 +215,10 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
                                     spinner.setSelection(adapter.getPosition(item));
                                     currentSelection = item;
                                     defaultLang = currentCountry.getString("Code").toLowerCase();
+                                    loadingIndicator.setVisibility(View.VISIBLE);
                                     getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                                    toggleMenuButtons(false);
+                                    break;
                                 }
                             }
                         }catch (Exception ex) {
@@ -147,14 +241,11 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
 
                 break;
             case R.id.action_loc:
-               if (gps_enabled) {
-                   Toast.makeText(this, "Location On", Toast.LENGTH_SHORT)
-                           .show();
-               } else {
-                   Toast.makeText(this, "Location Off", Toast.LENGTH_SHORT)
-                           .show();
-               }
-                break;
+                if (!isLocationEnabled()) {
+                    checkLocationSettings();
+                } else {
+                    startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_SETTINGS_APP);
+                }
             default:
                 break;
         }
@@ -169,6 +260,7 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         builder.appendQueryParameter("country", defaultLang);
         builder.appendQueryParameter("pageSize", resultAmount);
         return new NewsLoader(this, builder.toString());
+
     }
 
     @Override
@@ -178,6 +270,7 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         if (newsArticles != null && !newsArticles.isEmpty()) {
             mAdapter.addAll(newsArticles);
         }
+        toggleMenuButtons(true);
     }
 
     @Override
@@ -185,8 +278,9 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         mAdapter.clear();
     }
 
-    private void isLocationEnabled () {
+    private boolean isLocationEnabled () {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
         try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (gps_enabled) {
@@ -195,5 +289,157 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
                 actionMenu.getItem(0).setIcon(R.drawable.ic_location_off);
             }
         } catch (Exception ex) {}
+        return gps_enabled;
     }
- }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                startLocationUpdates();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                try {
+                    status.startResolutionForResult(HeadlineActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {}
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+
+                break;
+        }
+    }
+
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient,
+                mLocationRequest,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                mRequestingLocationUpdates = true;
+            }
+        });
+
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                mRequestingLocationUpdates = false;
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        toggleMenuButtons(false);
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        startLocationUpdates();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        toggleMenuButtons(true);
+                        loadingIndicator.setVisibility(View.GONE);
+                        break;
+                }
+                break;
+
+            case REQUEST_SETTINGS_APP :
+                if (!isLocationEnabled ()) {
+                    defaultLang = "us";
+                    currentSelection = "United States";
+                    getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                } else {
+
+                }
+
+                break;
+        }
+    }
+
+    private void toggleMenuButtons (boolean enable) {
+        actionMenu.getItem(0).setEnabled(enable);
+        actionMenu.getItem(1).setEnabled(enable);
+        actionMenu.getItem(2).setEnabled(enable);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+       if (location != null) {
+           Geocoder coder = new Geocoder(getApplicationContext(), Locale.getDefault());
+           try {
+               List<Address> addresses = coder.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
+               if (addresses.size() > 0) {
+                   defaultLang = addresses.get(0).getCountryCode().toLowerCase();
+                   currentSelection = addresses.get(0).getCountryName();
+                   getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                   isLocationEnabled();
+                   stopLocationUpdates();
+               } else {
+                   System.out.println("No locations found...");
+               }
+           } catch (IOException e) {
+               e.printStackTrace();
+           }
+       } else {
+           System.out.println("NULL LOCATION");
+       }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+        //getLoaderManager().destroyLoader(HEADLINE_LOADER_ID);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+}
