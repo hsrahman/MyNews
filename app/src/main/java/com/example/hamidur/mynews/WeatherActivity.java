@@ -273,9 +273,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     private void getWeatherData(){
         getLocationInformation();
-        LoaderManager loaderManager = getLoaderManager();
-
-        loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+        initaliseLoader();
     }
 
     @Override
@@ -324,6 +322,22 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     }
 
+    private void initaliseLoader(){
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            LoaderManager loaderManager = getLoaderManager();
+
+            loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+        } else {
+            Toast.makeText(this, "Your device needs internet access for this operation", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void loadWeatherData () {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -369,9 +383,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 checkLocationSettings();
             }
             if (done) {
-                LoaderManager loaderManager = getLoaderManager();
-
-                loaderManager.initLoader(WEATHER_LOADER_ID, null, this);
+                initaliseLoader();
             }
         } else {
             AlertDialog.Builder dialog = createDialog(getResources().getString(R.string.need_wifi), false);
