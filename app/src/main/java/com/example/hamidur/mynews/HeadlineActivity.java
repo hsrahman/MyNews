@@ -91,6 +91,8 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
 
     private Menu actionMenu = null;
 
+    private static final int REQUEST_CODE = 1;
+
     protected static final int REQUEST_SETTINGS_APP = 0x2;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -373,6 +375,19 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE :
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkLocationSettings();
+                } else {
+                    Toast.makeText(this, "You must enable location permission to access the weather" ,Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void onResult(LocationSettingsResult locationSettingsResult) {
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
@@ -392,6 +407,7 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
 
     protected void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
