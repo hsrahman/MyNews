@@ -101,7 +101,7 @@ public class QueryUtils {
                 if (imgUrl.equals("null") || imgUrl.equals("")) imgUrl = "https://electricalwholesalersperth.com.au/wp-content/uploads/2016/02/unavailable.jpg";
 
                 NewsArticle newsArticle = new NewsArticle(imgUrl, description, title, author, date, url);
-
+                newsArticle.setTotal(Integer.parseInt(baseJsonResponse.getString("totalResults")));
                 newsArticleList.add(newsArticle);
             }
 

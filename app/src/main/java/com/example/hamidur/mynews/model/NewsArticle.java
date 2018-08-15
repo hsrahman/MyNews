@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class NewsArticle {
 
     private String title, date, description, author ,imgUrl, sourceUrl;
+    private int total;
 
     public NewsArticle(String imgUrl, String description, String title, String author , String date, String sourceUrl) {
         this.imgUrl = imgUrl;
@@ -16,6 +17,14 @@ public class NewsArticle {
         this.date = date;
         this.author = author;
         this.sourceUrl = sourceUrl;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public int getTotal() {
+        return this.total;
     }
 
     public String getImgUrl() {

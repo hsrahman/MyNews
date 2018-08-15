@@ -30,7 +30,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -67,9 +69,15 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         LocationListener,
         ResultCallback<LocationSettingsResult> {
 
-    private String defaultLang = "us";
-    private String resultAmount = "25";
-    private String currentSelection = "United States";
+    private static final int DEFAULT_RESULT_AMOUNT = 8;
+    private static final int DEFAULT_PAGE = 1;
+    private static final String DEFAULT_COUNTRY_CODE = "us";
+    private static final String DEFAULT_COUNTRY = "United States";
+
+    private String defaultLang = DEFAULT_COUNTRY_CODE;
+    private int resultAmount = DEFAULT_RESULT_AMOUNT;
+    private int page = DEFAULT_PAGE;
+    private String currentSelection = DEFAULT_COUNTRY;
 
     private NewsAdapter mAdapter;
 
@@ -96,6 +104,8 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
     protected final static String KEY_LOCATION = "location";
     protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
 
+    private ConnectivityManager connectivityManager;
+
     protected GoogleApiClient mGoogleApiClient;
 
     protected LocationRequest mLocationRequest;
@@ -106,6 +116,8 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
 
     protected Boolean mRequestingLocationUpdates;
 
+    private Button moreBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,10 +126,19 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         headlineListView = (ListView) findViewById(R.id.headlineList);
         emptyStateTextView = (TextView) findViewById(R.id.empty_view);
         loadingIndicator = (View) findViewById(R.id.loading_indicator);
-
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        moreBtn = new Button(HeadlineActivity.this);
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         mAdapter = new NewsAdapter(this, new ArrayList<NewsArticle>());
         headlineListView.setAdapter(mAdapter);
+        headlineListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                NewsArticle selectedArticle = mAdapter.getItem(position);
+                Uri newsUri = Uri.parse(selectedArticle.getSourceUrl());
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
+                startActivity(websiteIntent);
+            }
+        });
         headlineListView.setEmptyView(emptyStateTextView);
         NetworkInfo net = connectivityManager.getActiveNetworkInfo();
         if (net != null && net.isConnected()) {
@@ -131,6 +152,20 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
+    }
+
+    private boolean isNetworkConnected () {
+        NetworkInfo net = connectivityManager.getActiveNetworkInfo();
+        boolean connection = (net != null && net.isConnected());
+        if (!connection) {
+            if (mAdapter.isEmpty()) {
+                loadingIndicator.setVisibility(View.GONE);
+                emptyStateTextView.setText("Failed to retrieve data");
+            } else {
+                Toast.makeText(HeadlineActivity.this, "Failed to retrieve data", Toast.LENGTH_LONG).show();
+            }
+        }
+        return connection;
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -187,9 +222,14 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         switch (item.getItemId()) {
             // action with ID action_refresh was selected
             case R.id.action_refresh:
-                loadingIndicator.setVisibility(View.VISIBLE);
-                getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, this);
-                toggleMenuButtons(false);
+                if (isNetworkConnected ()) {
+                    mAdapter.clear(); // clear all old data
+                    page = DEFAULT_PAGE; // reset to first page
+                    resultAmount  = DEFAULT_RESULT_AMOUNT; // reset to correct result amount
+                    loadingIndicator.setVisibility(View.VISIBLE);
+                    getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, this);
+                    toggleMenuButtons(false);
+                }
                 break;
             case R.id.action_lang:
                 AlertDialog.Builder spinnerDialogue = new AlertDialog.Builder(HeadlineActivity.this);
@@ -206,23 +246,26 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
                 spinnerDialogue.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String item = spinner.getSelectedItem().toString();
-                        try {
-                            JSONArray isoList = new JSONArray(QueryUtils.readFromRawJsonFile(getResources(),R.raw.iso_json));
-                            for(int i = 0; i < isoList.length(); i++) {
-                                JSONObject currentCountry = isoList.getJSONObject(i);
-                                if (currentCountry.getString("Name").equals(item)) {
-                                    spinner.setSelection(adapter.getPosition(item));
-                                    currentSelection = item;
-                                    defaultLang = currentCountry.getString("Code").toLowerCase();
-                                    loadingIndicator.setVisibility(View.VISIBLE);
-                                    getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
-                                    toggleMenuButtons(false);
-                                    break;
+                        if (isNetworkConnected()){
+                            String item = spinner.getSelectedItem().toString();
+                            try {
+                                JSONArray isoList = new JSONArray(QueryUtils.readFromRawJsonFile(getResources(),R.raw.iso_json));
+                                for(int i = 0; i < isoList.length(); i++) {
+                                    JSONObject currentCountry = isoList.getJSONObject(i);
+                                    if (currentCountry.getString("Name").equals(item)) {
+                                        resetQueryDetails ();
+                                        spinner.setSelection(adapter.getPosition(item));
+                                        currentSelection = item;
+                                        defaultLang = currentCountry.getString("Code").toLowerCase();
+                                        loadingIndicator.setVisibility(View.VISIBLE);
+                                        getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                                        toggleMenuButtons(false);
+                                        break;
+                                    }
                                 }
+                            }catch (Exception ex) {
+                                System.out.println("Error reading ISO JSON File.");
                             }
-                        }catch (Exception ex) {
-                            System.out.println("Error reading ISO JSON File.");
                         }
                         dialog.dismiss();
                     }
@@ -258,17 +301,39 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         Uri baseUri = Uri.parse(NEWSAPI_REQUEST_URL);
         Uri.Builder builder = baseUri.buildUpon();
         builder.appendQueryParameter("country", defaultLang);
-        builder.appendQueryParameter("pageSize", resultAmount);
+        builder.appendQueryParameter("pageSize", String.valueOf(resultAmount));
+        builder.appendQueryParameter("page", String.valueOf(page));
         return new NewsLoader(this, builder.toString());
 
     }
 
     @Override
-    public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
+    public void onLoadFinished(Loader<List<NewsArticle>> loader, final List<NewsArticle> newsArticles) {
         loadingIndicator.setVisibility(View.GONE);
-        mAdapter.clear();
+
         if (newsArticles != null && !newsArticles.isEmpty()) {
+            if (newsArticles.get(0).getTotal() > (resultAmount*page)) {
+
+                moreBtn.setText("See More");
+                // add button onclick feature
+                moreBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (isNetworkConnected()) {
+                            toggleMenuButtons(false);
+                            page++;
+                            loadingIndicator.setVisibility(View.VISIBLE);
+                            getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                        }
+                    }
+                });
+                if (headlineListView.getFooterViewsCount() < 1)
+                    headlineListView.addFooterView(moreBtn);
+            } else {
+                headlineListView.removeFooterView(moreBtn);
+            }
             mAdapter.addAll(newsArticles);
+            mAdapter.notifyDataSetChanged();
         }
         toggleMenuButtons(true);
     }
@@ -373,16 +438,26 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
 
             case REQUEST_SETTINGS_APP :
                 if (!isLocationEnabled ()) {
-                    defaultLang = "us";
-                    currentSelection = "United States";
-                    getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
-                } else {
-
+                    if (isNetworkConnected()) {
+                        resetQueryDetails ();
+                        getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                    } else {
+                        toggleMenuButtons(true);
+                    }
                 }
 
                 break;
         }
     }
+
+    private void resetQueryDetails () {
+        mAdapter.clear(); // clear all old data
+        page = DEFAULT_PAGE; // reset to first page
+        resultAmount = DEFAULT_RESULT_AMOUNT; // reset to correct result amount
+        defaultLang = DEFAULT_COUNTRY_CODE;
+        currentSelection =  DEFAULT_COUNTRY;
+    }
+
 
     private void toggleMenuButtons (boolean enable) {
         actionMenu.getItem(0).setEnabled(enable);
@@ -398,9 +473,15 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
            try {
                List<Address> addresses = coder.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
                if (addresses.size() > 0) {
+                   resetQueryDetails ();
                    defaultLang = addresses.get(0).getCountryCode().toLowerCase();
                    currentSelection = addresses.get(0).getCountryName();
-                   getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                   if (isNetworkConnected()) {
+                       getLoaderManager().restartLoader(HEADLINE_LOADER_ID, null, HeadlineActivity.this);
+                   } else {
+                       toggleMenuButtons(true);
+                       loadingIndicator.setVisibility(View.GONE);
+                   }
                    isLocationEnabled();
                    stopLocationUpdates();
                } else {
