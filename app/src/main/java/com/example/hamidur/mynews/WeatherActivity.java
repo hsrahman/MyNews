@@ -431,9 +431,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         temp.setText(data.get(0).getTemp()+ "\u00B0");
         temp.setVisibility(View.VISIBLE);
 
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_indicator);
-        progressBar.setVisibility(View.GONE);
-
         // setting 7-days forcast data
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
