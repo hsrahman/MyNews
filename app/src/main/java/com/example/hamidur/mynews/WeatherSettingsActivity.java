@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -22,6 +23,9 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_settings);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Switch locSwitch = (Switch) findViewById(R.id.location_switch);
 
@@ -76,5 +80,19 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             TextView timeZone = (TextView) findViewById(R.id.location_timezone);
             timeZone.setText(myLoc.getTimeZoneId());
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home :
+                finish();
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
     }
 }

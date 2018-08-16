@@ -12,6 +12,7 @@ import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -55,6 +56,10 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_source);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         ListView sourceListView = (ListView) findViewById(R.id.sourcelist);
         // instantiate hasmap
         categoryToSource = new HashMap<>();
@@ -195,6 +200,20 @@ public class SourceActivity extends AppCompatActivity implements AdapterView.OnI
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home :
+                finish();
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
     }
 
     private class SpinnerAdapter extends ArrayAdapter<String> {

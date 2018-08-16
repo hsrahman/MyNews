@@ -14,9 +14,11 @@ import android.support.v4.util.ArraySet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hamidur.mynews.adapter.NewsAdapter;
 import com.example.hamidur.mynews.R;
@@ -35,6 +37,7 @@ import java.util.Set;
 public class OptionThreeFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<NewsArticle>>{
 
     private NewsAdapter mAdapter;
+    private ListView newsListView;
 
     private static final int ARTICLE_LOADER_ID = 3;
 
@@ -44,6 +47,14 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
 
     private View rootView;
 
+    private int resultAmount = 8;
+    private int currentPage = 1;
+    private boolean flag_loading = false;
+
+    private ConnectivityManager connMgr;
+
+    Toast lastToast = null; // Class member variable
+
     public OptionThreeFragment() {
         // Required empty public constructor
     }
@@ -51,9 +62,10 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         rootView = inflater.inflate(R.layout.news_list, container, false);
 
-        ListView newsListView = (ListView) rootView.findViewById(R.id.list);
+        newsListView = (ListView) rootView.findViewById(R.id.list);
 
         mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
 
@@ -72,7 +84,7 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
             }
         });
 
-        ConnectivityManager connMgr = (ConnectivityManager)
+        connMgr = (ConnectivityManager)
                 getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -89,20 +101,65 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
         return rootView;
     }
 
+    private void loadMoreData () {
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            currentPage++;
+            getActivity().getLoaderManager().restartLoader(ARTICLE_LOADER_ID, null, this);
+        } else {
+            if (lastToast != null) {
+                try {
+                    lastToast.getView().isShown(); // true if visible
+                } catch (Exception e) {
+                    createToast ();
+                }
+            } else {
+                createToast ();
+            }
+        }
+
+    }
+
+    private void createToast () {
+        lastToast = Toast.makeText(getActivity(), "Failed to load more data." , Toast.LENGTH_SHORT);
+        lastToast.show();
+    }
+
     @Override
-    public void onLoadFinished(Loader<List<NewsArticle>> loader, List<NewsArticle> newsArticles) {
+    public void onLoadFinished(Loader<List<NewsArticle>> loader, final List<NewsArticle> newsArticles) {
         View loadingIndicator = rootView.findViewById(R.id.loading_indicator);
         loadingIndicator.setVisibility(View.GONE);
 
-        emptyStateTextView.setText(R.string.no_news);
-
-        mAdapter.clear();
-
         if (newsArticles != null && !newsArticles.isEmpty()) {
-            mAdapter.addAll(newsArticles);
-        }
+            newsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
 
-        getLoaderManager().destroyLoader(ARTICLE_LOADER_ID);
+                }
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                    if(firstVisibleItem+visibleItemCount == totalItemCount && totalItemCount!=0)
+                    {
+                        if(!flag_loading)
+                        {
+                            flag_loading = true;
+
+                            if (newsArticles.get(0).getTotal() > (resultAmount*currentPage)) {
+                                flag_loading = false;
+                                loadMoreData ();
+                            }
+                        }
+                    }
+                }
+            });
+
+            mAdapter.addAll(newsArticles);
+            mAdapter.notifyDataSetChanged();
+
+        } else {
+            emptyStateTextView.setText(R.string.no_news);
+        }
     }
 
     @Override
@@ -117,6 +174,8 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
                 Gson gson = new Gson();
                 Source obj = gson.fromJson(source, Source.class);
                 uriBuilder.appendQueryParameter("sources", obj.getId());
+                uriBuilder.appendQueryParameter("pageSize", String.valueOf(resultAmount));
+                uriBuilder.appendQueryParameter("page", String.valueOf(currentPage));
             }
         }
 

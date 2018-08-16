@@ -24,6 +24,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -125,6 +126,9 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_headline);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         headlineListView = (ListView) findViewById(R.id.headlineList);
         emptyStateTextView = (TextView) findViewById(R.id.empty_view);
         loadingIndicator = (View) findViewById(R.id.loading_indicator);
@@ -222,6 +226,9 @@ public class HeadlineActivity extends AppCompatActivity implements LoaderManager
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home :
+                finish();
+                break;
             // action with ID action_refresh was selected
             case R.id.action_refresh:
                 if (isNetworkConnected ()) {
