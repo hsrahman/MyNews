@@ -11,15 +11,18 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hamidur.mynews.R;
@@ -42,9 +45,19 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
     private LinearLayoutManager mLayoutManager;
 
     private View loadingIndicator;
+    private TextView emptyPageTv;
     private static final String NEWSAPI_REQUEST_URL = "https://newsapi.org/v2/everything";
+    private OnBackPressedListener onBackPressedListener;
     public SearchFragment() {
         // Required empty public constructor
+    }
+
+    public interface OnBackPressedListener{
+        void onBackPressed();
+    }
+
+    public void setOnBackPressedListener(OnBackPressedListener onBackPressedListener){
+        this.onBackPressedListener = onBackPressedListener;
     }
 
 
@@ -67,11 +80,18 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
         });
 
         loadingIndicator = (View) rootView.findViewById(R.id.loading_indicator);
+        emptyPageTv = (TextView) rootView.findViewById(R.id.empty_state);
         mAdapter = new NewsAdapter(getActivity(), new ArrayList<NewsArticle>());
         mLayoutManager = new LinearLayoutManager(getActivity());
         mListView.setAdapter(mAdapter);
         setHasOptionsMenu(true);
         return rootView;
+    }
+
+    public void toggleBackButton(boolean show) {
+        if (getActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(show);
+        }
     }
 
     private void initaliseLoader(){
@@ -95,7 +115,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-
+        toggleBackButton(true);
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getActivity().getSystemService(getContext().SEARCH_SERVICE);
@@ -120,6 +140,18 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch(item.getItemId()){
+            case android.R.id.home:
+                onBackPressedListener.onBackPressed();
+                toggleBackButton(false);
+                break;
+        }
+        return true;
+    }
+
     private void performSearch(String query){
         searchString = query;
         initaliseLoader();
@@ -140,7 +172,10 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
         loadingIndicator.setVisibility(View.GONE);
         mAdapter.clear();
         if (newsArticles != null && !newsArticles.isEmpty()) {
+            emptyPageTv.setVisibility(View.GONE);
             mAdapter.addAll(newsArticles);
+        } else {
+            emptyPageTv.setVisibility(View.VISIBLE);
         }
     }
 

@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.hamidur.mynews.AboutActivity;
+import com.example.hamidur.mynews.ExchangeRateActivity;
 import com.example.hamidur.mynews.HeadlineActivity;
 import com.example.hamidur.mynews.NewsActivity;
 import com.example.hamidur.mynews.R;
@@ -67,6 +68,14 @@ public class MainFragment extends Fragment {
             public void onClick(View v) {
                 Intent settingsActivity = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(settingsActivity);
+            }
+        });
+
+        currencyApi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent exchangeRateActivity = new Intent(getActivity(), ExchangeRateActivity.class);
+                startActivity(exchangeRateActivity);
             }
         });
 

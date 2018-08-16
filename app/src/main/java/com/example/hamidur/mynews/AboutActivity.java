@@ -2,9 +2,8 @@ package com.example.hamidur.mynews;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Explode;
 import android.view.MenuItem;
-import android.view.Window;
+
 
 public class AboutActivity extends AppCompatActivity {
 

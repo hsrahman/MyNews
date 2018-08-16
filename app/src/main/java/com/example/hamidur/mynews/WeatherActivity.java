@@ -93,6 +93,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     protected Boolean mRequestingLocationUpdates;
 
+    private View loadingIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +123,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
             }
         });
+        loadingIndicator = findViewById(R.id.loading_indicator);
 
         updateValuesFromBundle(savedInstanceState);
         mRequestingLocationUpdates = false;
@@ -217,6 +220,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
             return;
         }
+        loadingIndicator.setVisibility(View.VISIBLE);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient,
                 mLocationRequest,
@@ -312,6 +316,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
         mCurrentLocation = location;
 
         getWeatherData();
+        loadingIndicator.setVisibility(View.GONE);
 
         stopLocationUpdates();
     }
@@ -349,6 +354,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
             String storedLocation = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.location_pref), "");
             if (!isLocationUsed) {
                 if (!storedLocation.equals("")) {
+                    loadingIndicator.setVisibility(View.VISIBLE);
                     Gson gson = new Gson();
                     com.example.hamidur.mynews.model.Location myLocation = gson.fromJson(storedLocation, com.example.hamidur.mynews.model.Location.class);
                     mCurrentLocation = new Location(myLocation.getAsciiName());
@@ -411,7 +417,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoadFinished(Loader<List<Weather>> loader, List<Weather> data) {
-
+        loadingIndicator.setVisibility(View.GONE);
         RelativeLayout weatherBck = (RelativeLayout) findViewById(R.id.current_weather_bck);
         weatherBck.setBackground(ResourcesCompat.getDrawable(getResources(), setWeatherBack(data.get(0).getDescriptionCode()), null));
         // setting current weather from first item in the list

@@ -10,9 +10,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
 
-
-    public MainFragmentPagerAdapter(FragmentManager fm) {
+    SearchFragment.OnBackPressedListener onBackPressedListener;
+    public MainFragmentPagerAdapter(FragmentManager fm, SearchFragment.OnBackPressedListener onBackPressedListener) {
         super(fm);
+        this.onBackPressedListener = onBackPressedListener;
     }
 
     @Override
@@ -20,7 +21,9 @@ public class MainFragmentPagerAdapter extends FragmentPagerAdapter {
         if (position == 0) {
             return new MainFragment();
         } else {
-            return new SearchFragment();
+            SearchFragment searchFragment = new SearchFragment();
+            searchFragment.setOnBackPressedListener(onBackPressedListener);
+            return searchFragment;
         }
     }
 
