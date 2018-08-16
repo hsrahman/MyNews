@@ -267,8 +267,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="110dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/exchangerate_logo"
-                    android:background="#16222a"
+                    android:src="@drawable/logo"
+                    android:background="#0024b4"
                     android:padding="30dp"/>
 
                 <TextView
@@ -286,7 +286,7 @@
                     android:layout_alignBottom="@id/exchangerate_api"
                     android:layout_alignParentStart="true"
                     android:layout_marginLeft="8dp"
-                    android:text="ExchangeRate-API"
+                    android:text="ExchangeRates API"
                     android:textColor="#ffffff"
                     android:textSize="18sp"
                     android:textStyle="bold" />

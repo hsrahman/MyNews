@@ -21,4 +21,13 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/empty_state"
+        android:text="No results yet..."
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:textSize="30dp"/>
+
 </FrameLayout>
