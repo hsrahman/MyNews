@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,8 +28,6 @@ import java.util.List;
 public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
 
     private OnSpinnerItemSelectedListener onSpinnerItemSelectedListener;
-    public static final String SPINNER_1_ID = "SPINNER_1";
-    public static final String SPINNER_2_ID = "SPINNER_2";
 
     private List<String> allCurrencyCodes;
     private List<String> countryCurrency;
@@ -38,7 +37,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
     }
 
     public interface OnSpinnerItemSelectedListener{
-        void onSpinnerItemSelected(String spinnerId, String spinnerData);
+        void onSpinnerItemSelected(int spinnerId, String spinnerData);
     }
 
     public void setOnSpinnerItemSelectedListener(OnSpinnerItemSelectedListener onSpinnerItemSelectedListener){
@@ -46,14 +45,14 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int positionInList, View convertView, ViewGroup parent) {
         View listItemView = convertView;
         if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
                     R.layout.exchange_rate_item, parent, false);
         }
         readJsonCurrencies ();
-        ExchangeRate rate = getItem(position);
+        ExchangeRate rate = getItem(positionInList);
         TextView countryExrName = (TextView) listItemView.findViewById(R.id.ex_country_name);
         TextView countryExrValue = (TextView) listItemView.findViewById(R.id.ex_rate);
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
@@ -62,6 +61,18 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner s = (Spinner) listItemView.findViewById(R.id.country_ex_spinner);
         s.setAdapter(adapter);
+
+        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onSpinnerItemSelectedListener.onSpinnerItemSelected(positionInList, parent.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         s.setSelection(adapter.getPosition(rate.getTo()));
         countryExrName.setText(countryCurrency.get(adapter.getPosition(rate.getTo())));
