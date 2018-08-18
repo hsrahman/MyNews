@@ -1,9 +1,11 @@
 package com.example.hamidur.mynews.utility;
 
 import android.content.res.Resources;
+import android.net.UrlQuerySanitizer;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.hamidur.mynews.model.ExchangeRate;
 import com.example.hamidur.mynews.model.Location;
 import com.example.hamidur.mynews.model.NewsArticle;
 import com.example.hamidur.mynews.model.Source;
@@ -34,6 +36,38 @@ public class QueryUtils {
     private QueryUtils() {
 
     }
+
+    public static List<ExchangeRate> fetchExchangeRateDate(String requestUrl){
+        List<ExchangeRate> locations = extractExchangeRateFromJson(getHttpResultString(requestUrl));
+        return locations;
+    }
+
+    private static List<ExchangeRate> extractExchangeRateFromJson(String httpResultString) {
+        if(TextUtils.isEmpty(httpResultString)) {
+            return null;
+        }
+
+        List<ExchangeRate> exchangeRateList = new ArrayList<>();
+
+        try{
+            JSONObject baseJsonResponse = new JSONObject(httpResultString);
+            JSONObject resultJson = baseJsonResponse.getJSONObject("results");
+
+            UrlQuerySanitizer sanitizer = new UrlQuerySanitizer(httpResultString);
+            String value = sanitizer.getValue("parameter");
+            String[] valueArr = value.split(",");
+            for (String currency: valueArr) {
+                JSONObject exchangeRateJson = resultJson.getJSONObject(currency);
+                exchangeRateList.add(new ExchangeRate(exchangeRateJson.getString("fr"), exchangeRateJson.getString("to"), exchangeRateJson.getString("val")));
+            }
+
+        } catch (JSONException e) {
+            Log.e("QueryUtils", "Problem parsing the location JSON results", e);
+        }
+
+        return exchangeRateList;
+    }
+
 
     private static List<Location> extractLocationsFromJson (String locationJson) {
         if(TextUtils.isEmpty(locationJson)) {
