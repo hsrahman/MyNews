@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_health"
+            android:src="@drawable/ic_unknown_country"
             android:layout_marginEnd="5dp"
             android:scaleType="center"
             />
@@ -28,7 +28,7 @@
                android:id="@+id/ex_country_name"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="United Kingdom"/>
+               android:text="Country Name"/>
 
            <Spinner
                android:id="@+id/country_ex_spinner"
@@ -54,7 +54,7 @@
             android:id="@+id/ex_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="30GBP"
+            android:text="0CUR"
             android:textSize="24sp"/>
 
     </LinearLayout>
