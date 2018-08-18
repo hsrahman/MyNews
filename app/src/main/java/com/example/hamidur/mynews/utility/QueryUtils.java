@@ -38,11 +38,11 @@ public class QueryUtils {
     }
 
     public static List<ExchangeRate> fetchExchangeRateDate(String requestUrl){
-        List<ExchangeRate> locations = extractExchangeRateFromJson(getHttpResultString(requestUrl));
+        List<ExchangeRate> locations = extractExchangeRateFromJson(requestUrl, getHttpResultString(requestUrl));
         return locations;
     }
 
-    private static List<ExchangeRate> extractExchangeRateFromJson(String httpResultString) {
+    private static List<ExchangeRate> extractExchangeRateFromJson(String requestUrl, String httpResultString) {
         if(TextUtils.isEmpty(httpResultString)) {
             return null;
         }
@@ -53,8 +53,8 @@ public class QueryUtils {
             JSONObject baseJsonResponse = new JSONObject(httpResultString);
             JSONObject resultJson = baseJsonResponse.getJSONObject("results");
 
-            UrlQuerySanitizer sanitizer = new UrlQuerySanitizer(httpResultString);
-            String value = sanitizer.getValue("parameter");
+            UrlQuerySanitizer sanitizer = new UrlQuerySanitizer(requestUrl);
+            String value = sanitizer.getValue("q");
             String[] valueArr = value.split(",");
             for (String currency: valueArr) {
                 JSONObject exchangeRateJson = resultJson.getJSONObject(currency);

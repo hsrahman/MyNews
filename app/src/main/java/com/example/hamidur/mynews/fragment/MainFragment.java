@@ -134,13 +134,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-        currencyApi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Exchange Rates coming soon...", Toast.LENGTH_LONG).show();
-            }
-        });
-
         return rootView;
     }
 
