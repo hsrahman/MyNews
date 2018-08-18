@@ -24,8 +24,20 @@ import java.util.List;
 
 public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
 
+    private OnSpinnerItemSelectedListener onSpinnerItemSelectedListener;
+    public static final String SPINNER_1_ID = "SPINNER_1";
+    public static final String SPINNER_2_ID = "SPINNER_2";
+
     public ExchangeAdapter(Context context, List<ExchangeRate> exchangeRates) {
         super(context, 0, exchangeRates);
+    }
+
+    public interface OnSpinnerItemSelectedListener{
+        void onSpinnerItemSelected(String spinnerId, String spinnerData);
+    }
+
+    public void setOnSpinnerItemSelectedListener(OnSpinnerItemSelectedListener onSpinnerItemSelectedListener){
+        this.onSpinnerItemSelectedListener = onSpinnerItemSelectedListener;
     }
 
     @Override
