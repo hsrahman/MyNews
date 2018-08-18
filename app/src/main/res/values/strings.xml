@@ -49,6 +49,7 @@
     <string name="location_pref">location</string>
     <string name="source_pref">source</string>
     <string name="location_switch_pref">location_enable</string>
+    <string name="currency">currency</string>
 
     <string name="naziur_name">Naziur Rahman</string>
     <string name="naziur_eduction">Education: BSc (Hons) Computer Science</string>
