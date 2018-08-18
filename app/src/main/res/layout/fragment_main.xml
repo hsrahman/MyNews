@@ -267,8 +267,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="110dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/logo"
-                    android:background="#0024b4"
+                    android:src="@drawable/ex_logo"
+                    android:background="#51e3c2"
                     android:padding="30dp"/>
 
                 <TextView

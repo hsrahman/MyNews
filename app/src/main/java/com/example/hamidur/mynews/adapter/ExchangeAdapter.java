@@ -35,6 +35,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
 
     public ExchangeAdapter(Context context, List<ExchangeRate> exchangeRates) {
         super(context, 0, exchangeRates);
+        readJsonCurrencies ();
     }
 
     public interface OnSpinnerItemSelectedListener{
@@ -52,7 +53,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
             listItemView = LayoutInflater.from(getContext()).inflate(
                     R.layout.exchange_rate_item, parent, false);
         }
-        readJsonCurrencies ();
+
         ExchangeRate rate = getItem(position);
         TextView countryExrName = (TextView) listItemView.findViewById(R.id.ex_country_name);
         TextView countryExrValue = (TextView) listItemView.findViewById(R.id.ex_rate);
@@ -90,6 +91,14 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<String> getAllCurrencyCodes () {
+        return allCurrencyCodes;
+    }
+
+    public List<String> getCurrencyNames () {
+        return countryCurrency;
     }
 
 }

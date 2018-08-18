@@ -128,7 +128,7 @@ public class MainFragment extends Fragment {
         exchangerateApi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri newsUri = Uri.parse("https://www.exchangerate-api.com/");
+                Uri newsUri = Uri.parse("https://www.currencyconverterapi.com/");
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW, newsUri);
                 startActivity(websiteIntent);
             }
