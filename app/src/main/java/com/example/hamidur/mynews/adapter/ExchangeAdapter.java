@@ -4,8 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.example.hamidur.mynews.R;
+import com.example.hamidur.mynews.model.ExchangeRate;
 import com.example.hamidur.mynews.utility.QueryUtils;
 
 import org.json.JSONArray;
@@ -14,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Hamidur on 17/08/2018.

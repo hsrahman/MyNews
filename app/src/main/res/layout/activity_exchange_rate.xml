@@ -14,7 +14,7 @@
         android:divider="@null"
         android:dividerHeight="0dp"
         android:orientation="vertical"
-        android:layout_above="@id/get_rate_btn"/>
+        android:layout_above="@+id/get_rate_btn"/>
 
     <Button
         android:id="@+id/get_rate_btn"
