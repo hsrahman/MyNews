@@ -32,8 +32,11 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
     private List<String> allCurrencyCodes;
     private List<String> countryCurrency;
 
+    private List<TextView> allFields;
+
     public ExchangeAdapter(Context context, List<ExchangeRate> exchangeRates) {
         super(context, 0, exchangeRates);
+        allFields = new ArrayList<>();
         readJsonCurrencies ();
     }
 
@@ -56,10 +59,11 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
         ExchangeRate rate = getItem(positionInList);
 
         final TextView countryExrName = (TextView) listItemView.findViewById(R.id.ex_country_name);
-        TextView countryExrValue = (TextView) listItemView.findViewById(R.id.ex_rate);
+        final TextView countryExrValue = (TextView) listItemView.findViewById(R.id.ex_rate);
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item,
                 allCurrencyCodes);
+        allFields.add(countryExrValue);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner s = (Spinner) listItemView.findViewById(R.id.country_ex_spinner);
         s.setAdapter(adapter);
@@ -71,6 +75,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
                 if(count >= 1) {
                     onSpinnerItemSelectedListener.onSpinnerItemSelected(positionInList, parent.getSelectedItem().toString());
                     countryExrName.setText(countryCurrency.get(position));
+                    countryExrValue.setText("0");
                 }
                 count++;
             }
@@ -81,13 +86,17 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
             }
         });
 
-
         countryExrName.setText(countryCurrency.get(adapter.getPosition(rate.getTo())));
         countryExrValue.setText(rate.getVal());
 
         return listItemView;
     }
 
+    public void resetAllCurrencyValues () {
+        for (TextView v : allFields) {
+            v.setText("0");
+        }
+    }
 
     private void readJsonCurrencies () {
         allCurrencyCodes = new ArrayList<>();

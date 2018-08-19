@@ -3,6 +3,7 @@ package com.example.hamidur.mynews;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,10 +23,12 @@ import com.example.hamidur.mynews.model.ExchangeRate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ExchangeRateActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<ExchangeRate>>, ExchangeAdapter.OnSpinnerItemSelectedListener{
 
     private static final String ER_URL = "https://free.currencyconverterapi.com/api/v6/convert";
+    private static final String DEFAULT_ER_URL = "https://free.currencyconverterapi.com/api/v6/convert?q=USD_DKK,USD_GBP";
 
     private static final int EXCHANGE_RATE_LOADER_ID = 4;
     private List<String> countries;
@@ -110,10 +113,18 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         myCountryName.setSelection(exchangeAdapter.getAllCurrencyCodes().indexOf(userSelectedCurrency));
 
         myCountryName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            int count=0;
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                userSelectedCurrency = exchangeAdapter.getAllCurrencyCodes().get(position);
-                myCountryValue.setText("1 " + userSelectedCurrency);
+               if (count > 0) {
+                   userSelectedCurrency = exchangeAdapter.getAllCurrencyCodes().get(position);
+                   SharedPreferences prefs = getSharedPreferences(
+                           "my_sources", Context.MODE_PRIVATE);
+                   prefs.edit().putString(getResources().getString(R.string.currency),userSelectedCurrency).apply();
+                   myCountryValue.setText("1 " + userSelectedCurrency);
+                   exchangeAdapter.resetAllCurrencyValues ();
+               }
+                count++;
             }
 
             @Override
