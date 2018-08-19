@@ -6,9 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.hamidur.mynews.R;
 import com.example.hamidur.mynews.model.ExchangeRate;
 import com.example.hamidur.mynews.utility.QueryUtils;
@@ -60,6 +62,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
 
         final TextView countryExrName = (TextView) listItemView.findViewById(R.id.ex_country_name);
         final TextView countryExrValue = (TextView) listItemView.findViewById(R.id.ex_rate);
+        final ImageView countryImage = (ImageView) listItemView.findViewById(R.id.countryIcon);
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item,
                 allCurrencyCodes);
@@ -68,6 +71,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
         Spinner s = (Spinner) listItemView.findViewById(R.id.country_ex_spinner);
         s.setAdapter(adapter);
         s.setSelection(adapter.getPosition(rate.getTo()));
+        setItemCountryIcon(rate.getTo(), countryImage);
         s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             int count=0;
             @Override
@@ -76,6 +80,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
                     onSpinnerItemSelectedListener.onSpinnerItemSelected(positionInList, parent.getSelectedItem().toString());
                     countryExrName.setText(countryCurrency.get(position));
                     countryExrValue.setText("0");
+                    setItemCountryIcon(parent.getSelectedItem().toString(), countryImage);
                 }
                 count++;
             }
@@ -90,6 +95,14 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
         countryExrValue.setText(rate.getVal());
 
         return listItemView;
+    }
+
+    private void setItemCountryIcon(String currencyCode, ImageView img){
+        Glide.with(getContext()).load("http://fxtop.com/ico/"+currencyCode.toLowerCase()+".gif")
+                .override(100,50)
+                .centerCrop()
+                .error(R.drawable.ic_unknown_country)
+                .into(img);
     }
 
     public void resetAllCurrencyValues () {

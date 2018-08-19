@@ -211,6 +211,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderManager.
                 } catch (IntentSender.SendIntentException e) {}
                 break;
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                finish();
                 break;
         }
     }

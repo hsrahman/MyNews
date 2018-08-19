@@ -12,6 +12,7 @@
         android:layout_alignParentStart="true">
 
         <ImageView
+            android:id="@+id/countryIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_unknown_country"
