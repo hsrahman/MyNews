@@ -11,6 +11,8 @@ public class Country {
     private static final Map<String, String> countries = new HashMap<String, String>() {
         {
             put("ALL", "Albania");
+            put("XCD", "None");
+            put("XCD", "None");
         }
     };
 

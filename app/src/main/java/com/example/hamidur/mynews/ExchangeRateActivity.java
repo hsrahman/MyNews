@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.hamidur.mynews.adapter.ExchangeAdapter;
 import com.example.hamidur.mynews.loader.ExchangeRateLoader;
 import com.example.hamidur.mynews.model.ExchangeRate;
@@ -28,6 +29,7 @@ import java.util.Map;
 public class ExchangeRateActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<ExchangeRate>>, ExchangeAdapter.OnSpinnerItemSelectedListener{
 
     private static final String ER_URL = "https://free.currencyconverterapi.com/api/v6/convert";
+    private static final String ICON_URL = "http://fxtop.com/ico/";
 
     private static final int EXCHANGE_RATE_LOADER_ID = 4;
     private List<String> countries;
@@ -82,10 +84,7 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
 
     @Override
     public Loader<List<ExchangeRate>> onCreateLoader(int id, Bundle args) {
-        userSelectedCurrency = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.currency), "");
-        if(userSelectedCurrency.isEmpty())
-            userSelectedCurrency = "USD";
-
+        userSelectedCurrency = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.currency), "USD");
             String queryString = "";
             for (int i = 0; i < countries.size(); i++) {
                 queryString += userSelectedCurrency + "_" + countries.get(i);
@@ -95,9 +94,18 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
             }
             Uri baseUri = Uri.parse(ER_URL + "?q="+queryString);
 
-
+        setCurrencyIcon ();
 
         return new ExchangeRateLoader(this, baseUri.toString());
+    }
+
+    private void setCurrencyIcon () {
+        Glide.with(ExchangeRateActivity.this)
+                .load(ICON_URL+ userSelectedCurrency.toLowerCase() +".gif")
+                .override(100, 50)
+                .centerCrop()
+                .error(R.drawable.ic_unknown_country)
+                .into(myCountryIcon);
     }
 
     @Override
@@ -122,6 +130,7 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
                    prefs.edit().putString(getResources().getString(R.string.currency),userSelectedCurrency).apply();
                    myCountryValue.setText("1 " + userSelectedCurrency);
                    exchangeAdapter.resetAllCurrencyValues ();
+                   setCurrencyIcon ();
                }
                 count++;
             }
