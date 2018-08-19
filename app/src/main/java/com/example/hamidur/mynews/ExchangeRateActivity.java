@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,6 +50,8 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exchange_rate);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         listView = (ListView) findViewById(R.id.exchangerates_list);
         loadingIndicator = (View) findViewById(R.id.loading_indicator);
         myCountryIcon = (ImageView) findViewById(R.id.my_country_icon);
@@ -145,6 +148,20 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
     @Override
     public void onSpinnerItemSelected(int spinnerId, String spinnerData) {
         countries.add(spinnerId, spinnerData);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home :
+                finish();
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
     }
 
 }
