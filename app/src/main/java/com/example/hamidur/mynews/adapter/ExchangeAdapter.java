@@ -63,12 +63,16 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner s = (Spinner) listItemView.findViewById(R.id.country_ex_spinner);
         s.setAdapter(adapter);
-
+        s.setSelection(adapter.getPosition(rate.getTo()));
         s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            int count=0;
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                onSpinnerItemSelectedListener.onSpinnerItemSelected(positionInList, parent.getSelectedItem().toString());
-                countryExrName.setText(countryCurrency.get(position));
+                if(count >= 1) {
+                    onSpinnerItemSelectedListener.onSpinnerItemSelected(positionInList, parent.getSelectedItem().toString());
+                    countryExrName.setText(countryCurrency.get(position));
+                }
+                count++;
             }
 
             @Override
@@ -77,7 +81,7 @@ public class ExchangeAdapter extends ArrayAdapter<ExchangeRate> {
             }
         });
 
-        s.setSelection(adapter.getPosition(rate.getTo()));
+
         countryExrName.setText(countryCurrency.get(adapter.getPosition(rate.getTo())));
         countryExrValue.setText(rate.getVal());
 

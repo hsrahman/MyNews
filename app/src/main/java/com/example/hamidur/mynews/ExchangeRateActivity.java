@@ -34,6 +34,7 @@ import java.util.Map;
 public class ExchangeRateActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<ExchangeRate>>, ExchangeAdapter.OnSpinnerItemSelectedListener{
 
     private static final String ER_URL = "https://free.currencyconverterapi.com/api/v6/convert";
+    private static final String DEFAULT_ER_URL = "https://free.currencyconverterapi.com/api/v6/convert?q=USD_DKK,USD_GBP";
 
     private static final int EXCHANGE_RATE_LOADER_ID = 4;
     private List<String> countries;
@@ -61,17 +62,11 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         Button getRateBtn = (Button) findViewById(R.id.get_rate_btn);
 
         countries = new ArrayList<>();
-        countries.add("DKK");
-        countries.add("GBP");
+
         getRateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(countries.isEmpty()){
-                    countries.add("DKK");
-                    countries.add("GBP");
-                } else {
-                    restartLoader();
-                }
+               restartLoader();
             }
         });
 
@@ -96,15 +91,21 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         userSelectedCurrency = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.currency), "");
         if(userSelectedCurrency.isEmpty())
             userSelectedCurrency = "USD";
+        Uri baseUri;
+        if(countries.size() > 0) {
+            String queryString = "";
+            for (int i = 0; i < countries.size(); i++) {
+                queryString += userSelectedCurrency + "_" + countries.get(i);
 
-        String queryString = "";
-        for(int i = 0; i < countries.size(); i++){
-            queryString += userSelectedCurrency+"_"+countries.get(i);
-
-            if(i < countries.size()-1)
-                queryString+=",";
+                if (i < countries.size() - 1)
+                    queryString += ",";
+            }
+            baseUri = Uri.parse(ER_URL + "?q="+queryString);
+        } else {
+            baseUri = Uri.parse(DEFAULT_ER_URL);
         }
-        Uri baseUri = Uri.parse(ER_URL + "?q="+queryString);
+
+
         return new ExchangeRateLoader(this, baseUri.toString());
     }
 
@@ -135,8 +136,6 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         myCountryValue.setText("1 " + userSelectedCurrency);
         listView.setAdapter(exchangeAdapter);
         exchangeAdapter.setOnSpinnerItemSelectedListener(this);
-        listView.setAdapter(exchangeAdapter);
-        countries.clear();
     }
 
     @Override
