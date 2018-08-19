@@ -19,22 +19,13 @@ import android.widget.TextView;
 import com.example.hamidur.mynews.adapter.ExchangeAdapter;
 import com.example.hamidur.mynews.loader.ExchangeRateLoader;
 import com.example.hamidur.mynews.model.ExchangeRate;
-import com.example.hamidur.mynews.utility.QueryUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ExchangeRateActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<ExchangeRate>>, ExchangeAdapter.OnSpinnerItemSelectedListener{
 
     private static final String ER_URL = "https://free.currencyconverterapi.com/api/v6/convert";
-    private static final String DEFAULT_ER_URL = "https://free.currencyconverterapi.com/api/v6/convert?q=USD_DKK,USD_GBP";
 
     private static final int EXCHANGE_RATE_LOADER_ID = 4;
     private List<String> countries;
@@ -54,7 +45,7 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         listView = (ListView) findViewById(R.id.exchangerates_list);
-        loadingIndicator = (View) findViewById(R.id.loading_indicator);
+        loadingIndicator = findViewById(R.id.loading_indicator);
         myCountryIcon = (ImageView) findViewById(R.id.my_country_icon);
         myCountryName = (Spinner) findViewById(R.id.my_country_name);
         myCountryValue = (TextView) findViewById(R.id.my_country_code);
@@ -62,7 +53,8 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         Button getRateBtn = (Button) findViewById(R.id.get_rate_btn);
 
         countries = new ArrayList<>();
-
+        countries.add(0, "DKK");
+        countries.add(1, "GBP");
         getRateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,8 +83,7 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
         userSelectedCurrency = getApplicationContext().getSharedPreferences("my_sources", Context.MODE_PRIVATE).getString(getResources().getString(R.string.currency), "");
         if(userSelectedCurrency.isEmpty())
             userSelectedCurrency = "USD";
-        Uri baseUri;
-        if(countries.size() > 0) {
+
             String queryString = "";
             for (int i = 0; i < countries.size(); i++) {
                 queryString += userSelectedCurrency + "_" + countries.get(i);
@@ -100,10 +91,8 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
                 if (i < countries.size() - 1)
                     queryString += ",";
             }
-            baseUri = Uri.parse(ER_URL + "?q="+queryString);
-        } else {
-            baseUri = Uri.parse(DEFAULT_ER_URL);
-        }
+            Uri baseUri = Uri.parse(ER_URL + "?q="+queryString);
+
 
 
         return new ExchangeRateLoader(this, baseUri.toString());
@@ -146,6 +135,8 @@ public class ExchangeRateActivity extends AppCompatActivity implements LoaderMan
 
     @Override
     public void onSpinnerItemSelected(int spinnerId, String spinnerData) {
+        if(!countries.isEmpty() && countries.size() > spinnerId)
+            countries.remove(spinnerId);
         countries.add(spinnerId, spinnerData);
     }
 
