@@ -28,7 +28,6 @@ import java.util.Map;
 public class ExchangeRateActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<ExchangeRate>>, ExchangeAdapter.OnSpinnerItemSelectedListener{
 
     private static final String ER_URL = "https://free.currencyconverterapi.com/api/v6/convert";
-    private static final String DEFAULT_ER_URL = "https://free.currencyconverterapi.com/api/v6/convert?q=USD_DKK,USD_GBP";
 
     private static final int EXCHANGE_RATE_LOADER_ID = 4;
     private List<String> countries;
