@@ -49,6 +49,7 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
 
     private int resultAmount = 8;
     private int currentPage = 1;
+    private int prevPage = 0;
     private boolean flag_loading = false;
 
     private ConnectivityManager connMgr;
@@ -154,8 +155,12 @@ public class OptionThreeFragment extends Fragment implements LoaderManager.Loade
                 }
             });
 
-            mAdapter.addAll(newsArticles);
-            mAdapter.notifyDataSetChanged();
+            if (prevPage != currentPage) {
+                mAdapter.addAll(newsArticles);
+                mAdapter.notifyDataSetChanged();
+            }
+
+            prevPage = currentPage;
 
         } else {
             emptyStateTextView.setText(R.string.no_news);

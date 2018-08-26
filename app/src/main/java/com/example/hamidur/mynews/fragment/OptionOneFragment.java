@@ -48,6 +48,7 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
 
     private int resultAmount = 8;
     private int currentPage = 1;
+    private int prevPage = 0;
 
     private boolean flag_loading = false;
 
@@ -154,13 +155,20 @@ public class OptionOneFragment extends Fragment implements LoaderManager.LoaderC
                 }
             });
 
-            mAdapter.addAll(newsArticles);
-            mAdapter.notifyDataSetChanged();
+            if (prevPage != currentPage) {
+                mAdapter.addAll(newsArticles);
+                mAdapter.notifyDataSetChanged();
+            }
+
+            prevPage = currentPage;
 
         } else {
             emptyStateTextView.setText(R.string.no_news);
         }
+
     }
+
+
 
     @Override
     public Loader<List<NewsArticle>> onCreateLoader(int i, Bundle bundle) {
